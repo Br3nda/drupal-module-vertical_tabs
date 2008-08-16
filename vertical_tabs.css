@@ -68,6 +68,10 @@ ul.vertical-tabs-list a {
   text-decoration: none;
 }
 
+.vertical-tabs ul.vertical-tabs-list a:focus {
+  outline: none;
+}
+
 /* Selected tab */
 .vertical-tabs ul.vertical-tabs-list li.selected a {
   background: transparent none;
