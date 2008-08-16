@@ -92,7 +92,7 @@ Drupal.behaviors.verticalTabs = function() {
           .addClass('vertical-tabs-' + k)
           .addClass('vertical-tabs-div'))
           .find('input, select, textarea')
-          .bind('change', function() { $('.vertical-tabs-list-' + k + ' > .description').html(Drupal.verticalTabs[v.callback].apply(this, v.args)) })
+          .bind('change', function() { $('.vertical-tabs-list-' + k + ' > .description').html(Drupal.verticalTabs[v.callback].apply(this, v.args)); $('.vertical-tabs-' + k).height($('.vertical-tabs ul').height() - 13) })
           .end()
           .find('ul');
           $('.vertical-tabs-' + k).remove();
@@ -100,7 +100,7 @@ Drupal.behaviors.verticalTabs = function() {
     });
     ul.end().insertBefore('.buttons');
     $('.vertical-tabs-div').hide();
-    $('.vertical-tabs-div:first').show();
+    $('.vertical-tabs-div:first').show().height($('.vertical-tabs ul').height() - 13);
     $('.vertical-tabs ul li:first').addClass('selected');
   }
 }
