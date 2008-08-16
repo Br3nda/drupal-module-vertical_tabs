@@ -58,6 +58,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     // Indicate that the JavaScript should be added later. We do this so that
     // our JavaScript gets added after collapse.js.
     $form['#post_render'][] = 'vertical_tabs_add_js_css';
+    $form['#post_render'][] = 'vertical_tabs_add_node_form_js';
   }
 }
 
@@ -70,3 +71,10 @@ function vertical_tabs_add_js_css($form) {
   return $form;
 }
 
+/**
+ * Add the JavaScript for the node form.
+ */
+function vertical_tabs_add_node_form_js($form) {
+  drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.node_form.js');
+  return $form;
+}
