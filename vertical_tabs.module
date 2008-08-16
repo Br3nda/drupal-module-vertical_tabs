@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * @file Main file for the vertical tabs module - provides vertical tabs on the
+ * node form.
+ */
+
+/**
+ * Implementation of hook_form_alter.
+ */
+function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
+  // Check to see which form we are in. Since the node form's form id is not
+  // just node_form, we can't implement a function for all node forms, so we are
+  // stuck implementing the global form_alter and checking if there is the
+  // string node_form in the form id.
+  if (strpos($form_id, 'node_form')) {
+    // We're in a node form - we can't group all fieldsets into a vertical_tabs
+    // element, because validation errors would arise from that, so instead we
+    // have to add a large number to all the weights of the fieldsets, because
+    // we want them to all be grouped together. Additionally, we need to bind
+    // the summary callback and add other JavaScript.
+    // The $fieldsets array is a list of all supported fieldsets in core,
+    // and their JavaScript summary creators.
+    $fieldsets = array(
+      'book' => 'book',
+      'revision_information' => 'revision',
+      'author' => 'authoring',
+      'options' => 'publishingOptions',
+      'menu' => 'menu',
+      'comment_settings' => 'comment',
+      'path' => 'path',
+      'attachments' => 'attachments',
+    );
+    // The javascript to add to the page.
+    $javascript = array();
+    // Store the greatest weight so we can know how low to move the buttons.
+    $greatest_weight = 0;
+    // Iterate through the form, finding fieldsets.
+    foreach (element_children($form) as $key) {
+      // We need to make sure that the element we have is a fieldset.
+      if ($form[$key]['#type'] == 'fieldset') {
+        // Assign the weight.
+        $form[$key]['#weight'] = ($form[$key]['#weight'] ? $form[$key]['#weight'] + 1000000 : 1000000);
+        // Determine the greatest weight.
+        $greatest_weight = max($greatest_weight, $form[$key]['#weight']);
+        // Add the JavaScript.
+        $javascript[$key] = array('name' => $form[$key]['#title']);
+        // If there's a summary callback, then add it.
+        if (isset($form[$key]['#summary_callback']) || isset($fieldsets[$key])) {
+          $javascript[$key]['callback'] = (isset($form[$key]['#summary_callback']) ? $form[$key]['#summary_callback'] : $fieldsets[$key]);
+          $javascript[$key]['args'] = (isset($form[$key]['#summary_arguments']) ? $form[$key]['#summary_arguments'] : array());
+        }
+        // Add a class to identify the fieldset.
+        if (isset($form[$key]['#attributes']['class']) && !empty($form[$key]['#attributes']['class'])) {
+          $form[$key]['#attributes']['class'] .= ' vertical-tabs-fieldset vertical-tabs-'. $key;
+        }
+        else {
+          $form[$key]['#attributes']['class'] = 'vertical-tabs-fieldset vertical-tabs-'. $key;
+        }
+      }
+    }
+    // Move the buttons, and add a <div> for easier placement of the tab element.
+    $form['buttons']['#weight'] = $greatest_weight + 1;
+    $form['buttons']['#prefix'] = '<div class="buttons">';
+    $form['buttons']['#suffix'] = '</div>';
+    // Add the JavaScript.
+    drupal_add_js(array('verticalTabs' => $javascript), 'setting');
+    // Indicate that the JavaScript should be added later. We do this so that
+    // our JavaScript gets added after collapse.js.
+    $form['#post_render'][] = 'vertical_tabs_add_js_css';
+  }
+}
+
+/**
+ * Add the JavaScript and CSS.
+ */
+function vertical_tabs_add_js_css($form) {
+  drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.js');
+  drupal_add_css(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.css');
+  return $form;
+}
+

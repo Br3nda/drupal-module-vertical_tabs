@@ -1,0 +1,96 @@
+.vertical-tabs-list .description {
+  display: block;
+}
+
+/* Border style of tabs and content */
+div.vertical-tabs,
+ul.vertical-tabs-list,
+ul.vertical-tabs-list a {
+  border: 1px solid #D9EAF5;
+}
+
+/* Make space for the tabs on the side */
+.vertical-tabs {
+  margin-left: 180px;
+}
+
+/* Set the background image on the tabs and content */
+.vertical-tabs,
+.vertical-tabs ul.vertical-tabs-list {
+  background: #fff url(/d6/themes/garland/images/gradient-inner.png) repeat-x top;
+}
+
+/* Position and layout of tabs container */
+.vertical-tabs ul.vertical-tabs-list { 
+  width: 179px;
+  padding: 0;
+}
+
+.vertical-tabs ul.vertical-tabs-list { 
+  float: left;
+  margin: -1px 0 -1px -180px;
+  border-width: 1px 0 0 1px;
+}
+
+
+/* Reset LIs which probably have awkward layout inherited from tabs */
+.vertical-tabs ul.vertical-tabs-list li {
+  float: none;
+  margin: 0;
+  padding: 0;
+  background-image: none;
+}
+
+/* Layout of each tab */
+.vertical-tabs ul.vertical-tabs-list a {
+  display: block;
+  margin: 0;
+  padding: .4em .3em .1em .6em;
+  background: #EDF5FA;
+  text-align: left;
+  font-weight: normal;
+}
+
+.vertical-tabs ul.vertical-tabs-list .description {
+  padding: 0;
+  line-height: normal;
+  min-height: 0;
+  white-space: normal;
+}
+
+.vertical-tabs ul.vertical-tabs-list a {
+  border-width: 0 1px 1px 0;
+}
+
+/* Hover state of tabs */
+.vertical-tabs ul.vertical-tabs-list a:hover {
+  color: #0062A0;
+  text-decoration: none;
+}
+
+/* Selected tab */
+.vertical-tabs ul.vertical-tabs-list li.selected a {
+  background: transparent none;
+  color: black;
+}
+
+.vertical-tabs ul.vertical-tabs-list li.selected a {
+  border-right: 0 none;
+}
+
+
+/* Reset some important elements of each panel */
+.vertical-tabs .vertical-tabs-div {
+  margin: 0;
+  padding: .5em;
+  border: 0 none;
+  background: transparent none;
+}
+
+.buttons {
+  clear: both;
+}
+
+#edit-book-bid-wrapper .description {
+  clear:none;
+}
