@@ -42,6 +42,9 @@ Drupal.verticalTabs.publishingOptions = function() {
   if ($('#edit-sticky').attr('checked')) {
     vals.push(Drupal.t('Sticky on top of lists'));
   }
+  if (vals.join(', ') == '') {
+    return Drupal.t('None');
+  }
   return vals.join(', ');
 }
 
