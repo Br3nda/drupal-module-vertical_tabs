@@ -14,11 +14,8 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
   // stuck implementing the global form_alter and checking if there is the
   // string node_form in the form id.
   if (strpos($form_id, 'node_form')) {
-    // We're in a node form - we can't group all fieldsets into a vertical_tabs
-    // element, because validation errors would arise from that, so instead we
-    // have to add a large number to all the weights of the fieldsets, because
-    // we want them to all be grouped together. Additionally, we need to bind
-    // the summary callback and add other JavaScript.
+    // We're in a node form - we need to bind the summary callback and add
+    // other JavaScript.
     // The $fieldsets array is a list of all supported fieldsets in core,
     // and their JavaScript summary creators.
     $fieldsets = array(
@@ -33,16 +30,10 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     );
     // The javascript to add to the page.
     $javascript = array();
-    // Store the greatest weight so we can know how low to move the buttons.
-    $greatest_weight = 0;
     // Iterate through the form, finding fieldsets.
     foreach (element_children($form) as $key) {
       // We need to make sure that the element we have is a fieldset.
       if ($form[$key]['#type'] == 'fieldset') {
-        // Assign the weight.
-        $form[$key]['#weight'] = ($form[$key]['#weight'] ? $form[$key]['#weight'] + 1000000 : 1000000);
-        // Determine the greatest weight.
-        $greatest_weight = max($greatest_weight, $form[$key]['#weight']);
         // Add the JavaScript.
         $javascript[$key] = array('name' => $form[$key]['#title']);
         // If there's a summary callback, then add it.
@@ -59,8 +50,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
         }
       }
     }
-    // Move the buttons, and add a <div> for easier placement of the tab element.
-    $form['buttons']['#weight'] = $greatest_weight + 1;
+    // A <div> for easier placement of the tab element.
     $form['buttons']['#prefix'] = '<div class="buttons">';
     $form['buttons']['#suffix'] = '</div>';
     // Add the JavaScript.
