@@ -3,9 +3,8 @@
 }
 
 /* Border style of tabs and content */
-div.vertical-tabs,
-ul.vertical-tabs-list,
-ul.vertical-tabs-list a {
+div.vertical-tabs-div,
+ul.vertical-tabs-list {
   border: 1px solid #D9EAF5;
 }
 
@@ -23,13 +22,11 @@ ul.vertical-tabs-list a {
 /* Position and layout of tabs container */
 .vertical-tabs ul.vertical-tabs-list { 
   width: 179px;
-  padding: 0;
-}
-
-.vertical-tabs ul.vertical-tabs-list { 
   float: left;
-  margin: -1px 0 -1px -180px;
-  border-width: 1px 0 0 1px;
+  margin: 0 0 0 -180px;
+  border-right: 0px;
+  z-index: 1;
+  border-bottom: 0;
 }
 
 
@@ -49,6 +46,7 @@ ul.vertical-tabs-list a {
   background: #EDF5FA;
   text-align: left;
   font-weight: normal;
+  border-bottom: 1px solid #D9EAF5;
 }
 
 .vertical-tabs ul.vertical-tabs-list .description {
@@ -59,13 +57,14 @@ ul.vertical-tabs-list a {
 }
 
 .vertical-tabs ul.vertical-tabs-list a {
-  border-width: 0 1px 1px 0;
+  border-right: 1px solid #D9EAF5;
 }
 
 /* Hover state of tabs */
 .vertical-tabs ul.vertical-tabs-list a:hover {
   color: #0062A0;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .vertical-tabs ul.vertical-tabs-list a:focus {
@@ -76,18 +75,15 @@ ul.vertical-tabs-list a {
 .vertical-tabs ul.vertical-tabs-list li.selected a {
   background: transparent none;
   color: black;
+  border-right: 0;
 }
-
-.vertical-tabs ul.vertical-tabs-list li.selected a {
-  border-right: 0 none;
-}
-
 
 /* Reset some important elements of each panel */
 .vertical-tabs .vertical-tabs-div {
   margin: 0;
   padding: .5em;
-  border: 0 none;
+  margin-top: -1px;
+  margin-left: -1px;
   background: transparent none;
 }
 

@@ -6,18 +6,56 @@
  */
 
 /**
+ * Implementation of hook_menu_alter().
+ */
+function vertical_tabs_menu_alter(&$items) {
+  $overridden_items = array();
+  $blacklist = array('admin/settings/performance' => TRUE, 'admin/settings/site-information' => TRUE);
+  foreach ($items as $path => $item) {
+    if (strpos($path, 'admin/settings/') === 0) {
+      $root_item = implode('/', array_slice(explode('/', $path), 0, 3));
+      if (count(explode('/', $path)) > 3) {
+        if (isset($overridden_items[$root_item])) {
+          unset($overridden_items[$root_item]);
+        }
+        $blacklist[$root_item] = TRUE;
+      }
+      elseif (!isset($blacklist[$root_item]) && $item['page callback'] == 'drupal_get_form' && !isset($item['title callback'])) {
+        $overridden_items[$path] = $item;
+      }
+    }
+  }
+  $variable = array();
+  foreach ($overridden_items as $path => $item) {
+    unset($items[$path]);
+    $variable[$path]['arguments'] = $item['page arguments'];
+    $variable[$path]['title'] = $item['title'];
+    $variable[$path]['title arguments'] = (isset($item['title arguments']) ? $item['title arguments'] : array());
+    $variable[$path]['description'] = (isset($item['description']) ? $item['description'] : array());
+    $variable[$path]['file'] = (isset($item['file']) ? drupal_get_path('module', $item['module']) .'/'. $item['file'] : '');
+  }
+  variable_set('vertical_tabs_settings_form', $variable);
+  $items['admin/settings/main'] = array(
+    'title' => 'Main configuration',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('vertical_tabs_settings_form'),
+    'access arguments' => array('administer site configuration'),
+  );
+}
+
+/**
  * Implementation of hook_form_alter.
  */
 function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
+  $fieldsets = array();
+  $node_form = FALSE;
   // Check to see which form we are in. Since the node form's form id is not
   // just node_form, we can't implement a function for all node forms, so we are
   // stuck implementing the global form_alter and checking if there is the
   // string node_form in the form id.
   if (strpos($form_id, 'node_form')) {
-    // We're in a node form - we need to bind the summary callback and add
-    // other JavaScript.
-    // The $fieldsets array is a list of all supported fieldsets in core,
-    // and their JavaScript summary creators.
+    // The $fieldsets array is a list of all supported fieldsets in core
+    // for the node form, and their JavaScript summary creators.
     $fieldsets = array(
       'book' => 'book',
       'revision_information' => 'revision',
@@ -28,6 +66,9 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
       'path' => 'path',
       'attachments' => 'attachments',
     );
+    $node_form = TRUE;
+  }
+  if ($node_form || $form_id == 'vertical_tabs_settings_form') {
     // The javascript to add to the page.
     $javascript = array();
     // Iterate through the form, finding fieldsets.
@@ -58,8 +99,47 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     // Indicate that the JavaScript should be added later. We do this so that
     // our JavaScript gets added after collapse.js.
     $form['#post_render'][] = 'vertical_tabs_add_js_css';
+  }
+  if ($node_form) {
     $form['#post_render'][] = 'vertical_tabs_add_node_form_js';
   }
+  else if ($form_id == 'vertical_tabs_settings_form') {
+    $form['#post_render'][] = 'vertical_tabs_add_settings_js';
+  }
+}
+
+/**
+ * Form callback - main settings page.
+ */
+function vertical_tabs_settings_form(&$form_state) {
+  $form = array();
+  $variable = variable_get('vertical_tabs_settings_form', array());
+  foreach ($variable as $item) {
+    $key = preg_replace('/[^a-z0-9]/', '', strtolower($item['title']));
+    $form[$key] = array(
+      '#type' => 'fieldset',
+      '#title' => t($item['title'], $item['title arguments']),
+      '#description' => t($item['description']),
+      '#collapsible' => TRUE,
+    );
+    $callback = array_shift($item['arguments']);
+    if (isset($item['file']) && !empty($item['file'])) {
+      include_once $item['file'];
+    }
+    array_unshift($item['arguments'], array());
+    $fs = array();
+    $form[$key] += drupal_retrieve_form($callback, $fs, $item['arguments']);
+    if (isset($form[$key]['buttons'])) {
+      unset($form[$key]['buttons']);
+    }
+    $form[$key]['#summary_callback'] = $key;
+  }
+  $form['buttons']['submit'] = array(
+    '#type' => 'submit', 
+    '#value' => t('Save configuration'),
+  );
+
+  return $form;
 }
 
 /**
@@ -76,5 +156,13 @@ function vertical_tabs_add_js_css($form) {
  */
 function vertical_tabs_add_node_form_js($form) {
   drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.node_form.js');
+  return $form;
+}
+
+/**
+ * Add the JavaScript for the settings form.
+ */
+function vertical_tabs_add_settings_js($form) {
+  drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.settings.js');
   return $form;
 }
