@@ -16,7 +16,7 @@ ul.vertical-tabs-list {
 /* Set the background image on the tabs and content */
 .vertical-tabs,
 .vertical-tabs ul.vertical-tabs-list {
-  background: #fff url(/d6/themes/garland/images/gradient-inner.png) repeat-x top;
+  background: #fff url(gradient-inner.png) repeat-x top;
 }
 
 /* Position and layout of tabs container */
