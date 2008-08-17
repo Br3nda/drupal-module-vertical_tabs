@@ -134,12 +134,8 @@ function vertical_tabs_settings_form(&$form_state) {
     }
     $form[$key]['#summary_callback'] = $key;
   }
-  $form['buttons']['submit'] = array(
-    '#type' => 'submit', 
-    '#value' => t('Save configuration'),
-  );
 
-  return $form;
+  return system_settings_form($form);
 }
 
 /**
