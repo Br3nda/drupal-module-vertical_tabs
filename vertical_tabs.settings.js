@@ -15,3 +15,13 @@ Drupal.verticalTabs.blogapi = function() {
     return Drupal.formatPlural(size, "1 content type enabled", "@count content types enabled");
   }
 }
+
+Drupal.verticalTabs.sitemaintenance = function() {
+  var size = $('.vertical-tabs-sitemaintenance input[checked]').size();
+  if (size) {
+    return $('.vertical-tabs-sitemaintenance input[checked]').parent().text();
+  }
+  else {
+    return $('.vertical-tabs-sitemaintenance input:first').parent().text();
+  }
+}
