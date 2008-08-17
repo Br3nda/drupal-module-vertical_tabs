@@ -4,11 +4,14 @@ Drupal.behaviors.verticalTabs = function() {
   if (!$('.vertical-tabs-list').size()) {
     var ul = $('<div class="vertical-tabs"><ul class="vertical-tabs-list"></ul></div>').find('ul');
     $.each(Drupal.settings.verticalTabs, function(k, v) {
-      var description = '';
+      var description = '', cssClass = 'vertical-tabs-list-' + k;
       if (v.callback && Drupal.verticalTabs[v.callback]) {
         description = '<span class="description">'+ Drupal.verticalTabs[v.callback].apply(this, v.args) +'</span>';
       }
-      ul.append($('<li><a href="#' + k + '" class="vertical-tabs-list-' + k + '">'+ v.name + description +'</a></li>')
+      else {
+        cssClass += ' vertical-tabs-nodescription';
+      }
+      ul.append($('<li><a href="#' + k + '" class="' + cssClass + '">'+ v.name + description +'</a></li>')
           .find('a')
           .bind('click', function() { $(this).parent().addClass('selected').siblings().removeClass('selected'); $('.vertical-tabs-' + k).show().siblings('.vertical-tabs-div').hide(); return false; })
           .end())

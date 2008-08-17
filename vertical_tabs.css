@@ -49,6 +49,10 @@ ul.vertical-tabs-list {
   border-bottom: 1px solid #D9EAF5;
 }
 
+.vertical-tabs ul.vertical-tabs-list a.vertical-tabs-nodescription {
+  padding-bottom: .4em;
+}
+
 .vertical-tabs ul.vertical-tabs-list .description {
   padding: 0;
   line-height: normal;
