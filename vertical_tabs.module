@@ -74,7 +74,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     // Iterate through the form, finding fieldsets.
     foreach (element_children($form) as $key) {
       // We need to make sure that the element we have is a fieldset.
-      if ($form[$key]['#type'] == 'fieldset') {
+      if (isset($form[$key]['#type']) && $form[$key]['#type'] == 'fieldset') {
         // Add the JavaScript.
         $javascript[$key] = array('name' => $form[$key]['#title']);
         // If there's a summary callback, then add it.
