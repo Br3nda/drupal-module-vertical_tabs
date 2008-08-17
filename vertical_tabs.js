@@ -18,7 +18,7 @@ Drupal.behaviors.verticalTabs = function() {
         .addClass('vertical-tabs-div'));
       if (v.callback && Drupal.verticalTabs[v.callback]) {
         ul.end()
-          .bind('change', function() { $('.vertical-tabs-list-' + k + ' > .description').html(Drupal.verticalTabs[v.callback].apply(this, v.args)); $('.vertical-tabs-' + k).height($('.vertical-tabs ul').height() - 13) })
+          .bind('change', function() { $('.vertical-tabs-list-' + k + ' > .description').html(Drupal.verticalTabs[v.callback].apply(this, v.args)); })
           .end()
           .find('ul');
       }
