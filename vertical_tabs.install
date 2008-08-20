@@ -5,5 +5,5 @@
  */
 function vertical_tabs_install() {
   // Make this module pretty heavy.
-  db_query("UPDATE system SET weight = 9999999999 WHERE name = '%s'", 'vertical_tabs');
+  db_query("UPDATE {system} SET weight = 9999999999 WHERE name = '%s'", 'vertical_tabs');
 }
