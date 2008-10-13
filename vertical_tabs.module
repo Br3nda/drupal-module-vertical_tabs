@@ -6,6 +6,20 @@
  */
 
 /**
+ * Implementation of hook_theme().
+ */
+function vertical_tabs_theme() {
+  return array(
+    'vertical_tabs' => array(
+      'arguments' => array('form_element' => NULL),
+    ),
+    'vertical_tabs_js_css' => array(
+      'arguments' => array('js' => NULL, 'css' => NULL, 'settings' => NULL, 'form_id' => NULL),
+    ),
+  );
+}
+
+/**
  * Implementation of hook_form_alter.
  */
 function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
@@ -32,7 +46,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
   }
   if ($node_form) {
     // The javascript to add to the page.
-    $javascript = array();
+    $settings = array();
     // Iterate through the form, finding fieldsets.
     foreach (element_children($form) as $key) {
       // We need to make sure that the element we have is a fieldset
@@ -40,11 +54,11 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
       if (isset($form[$key]['#type']) && $form[$key]['#type'] == 'fieldset' &&
         (!isset($form[$key]['#access']) || $form[$key]['#access'] != FALSE)) {
         // Add the JavaScript.
-        $javascript[$key] = array('name' => $form[$key]['#title']);
+        $settings[$key] = array('name' => $form[$key]['#title']);
         // If there's a summary callback, then add it.
         if (isset($form[$key]['#summary_callback']) || isset($fieldsets[$key])) {
-          $javascript[$key]['callback'] = (isset($form[$key]['#summary_callback']) ? $form[$key]['#summary_callback'] : $fieldsets[$key]);
-          $javascript[$key]['args'] = (isset($form[$key]['#summary_arguments']) ? $form[$key]['#summary_arguments'] : array());
+          $settings[$key]['callback'] = (isset($form[$key]['#summary_callback']) ? $form[$key]['#summary_callback'] : $fieldsets[$key]);
+          $settings[$key]['args'] = (isset($form[$key]['#summary_arguments']) ? $form[$key]['#summary_arguments'] : array());
         }
         // Add a class to identify the fieldset.
         if (isset($form[$key]['#attributes']['class']) && !empty($form[$key]['#attributes']['class'])) {
@@ -55,39 +69,47 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
         }
       }
     }
-    // A <div> for easier placement of the tab element.
-    $form['buttons']['#prefix'] = '<div class="buttons">';
-    $form['buttons']['#suffix'] = '</div>';
-    // Add the JavaScript.
-    drupal_add_js(array('verticalTabs' => $javascript), 'setting');
-    // Indicate that the JavaScript should be added later. We do this so that
-    // our JavaScript gets added after collapse.js.
-    $form['#post_render'][] = 'vertical_tabs_add_js_css';
-    $form['#post_render'][] = 'vertical_tabs_add_node_form_js';
+
+    // The JavaScript and CSS specific for this form.
+    $js = array(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.node_form.js');
+    $css = array();
+
+    $form['vertical_tabs'] = array(
+      '#vertical_tabs_settings' => $settings,
+      '#vertical_tabs_js' => $js,
+      '#vertical_tabs_css' => $css,
+      '#form_id' => $form_id,
+      '#type' => 'markup',
+      '#value' => '',
+      '#weight' => 100,
+      '#theme' => 'vertical_tabs',
+    );
   }
 }
 
 /**
- * Add the JavaScript and CSS.
+ * After build function to add vertical tabs JS and CSS to the form.
  */
-function vertical_tabs_add_js_css($form) {
-  drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.js');
-  drupal_add_css(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.css');
-  return $form;
+function theme_vertical_tabs(&$form_element) {
+  theme('vertical_tabs_js_css', $form_element['#vertical_tabs_js'], $form_element['#vertical_tabs_css'], $form_element['#vertical_tabs_settings'], $form_element['#form_id']);
+  return '<div class="vertical-tabs">&nbsp;</div>';
 }
 
 /**
- * Add the JavaScript for the node form.
+ * 
  */
-function vertical_tabs_add_node_form_js($form) {
-  drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.node_form.js');
-  return $form;
-}
-
-/**
- * Add the JavaScript for the settings form.
- */
-function vertical_tabs_add_settings_js($form) {
-  drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.settings.js');
-  return $form;
+function theme_vertical_tabs_js_css($js, $css, $settings, $form_id) {
+  static $js_added = array();
+  if (!isset($js_added[$form_id])) {
+    drupal_add_js(array('verticalTabs' => $settings), 'setting');
+    drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.js', 'theme');
+    drupal_add_css(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.css', 'theme');
+    foreach ($js as $path) {
+      drupal_add_js($path, 'theme');
+    }
+    foreach ($css as $path) {
+      drupal_add_css($path, 'theme');
+    }
+    $js_added[$form_id] = TRUE;
+  }
 }

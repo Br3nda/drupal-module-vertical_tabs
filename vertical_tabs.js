@@ -27,7 +27,8 @@ Drupal.behaviors.verticalTabs = function() {
       }
       $('.vertical-tabs-' + k).remove();
     });
-    ul.end().insertBefore('.buttons');
+    ul.end();
+    $('div.vertical-tabs').replaceWith(ul.parent());
     var max = Math.max($('.vertical-tabs ul').height() - 12, $('.vertical-tabs-div:first').height());
     $('.vertical-tabs-div').each(function() {
       max = Math.max(max, $(this).height());
