@@ -5,5 +5,15 @@
  */
 function vertical_tabs_install() {
   // Make this module pretty heavy.
-  db_query("UPDATE {system} SET weight = 9999999999 WHERE name = '%s'", 'vertical_tabs');
+  db_query("UPDATE {system} SET weight = 300 WHERE name = 'vertical_tabs'");
+}
+
+/**
+ * Reduce the module weight and remove the form settings variable.
+ */
+function vertical_tabs_update_6100() {
+  $ret = array();
+  $ret[] = update_sql("UPDATE {system} SET weight = 300 WHERE name = 'vertical_tabs'");
+  variable_del('vertical_tabs_settings_form');
+  return $ret;
 }
