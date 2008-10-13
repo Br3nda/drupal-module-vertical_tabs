@@ -23,35 +23,25 @@ function vertical_tabs_theme() {
  * Implementation of hook_form_alter.
  */
 function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
-  $fieldsets = array();
-  $node_form = FALSE;
   // Check to see which form we are in. Since the node form's form id is not
   // just node_form, we can't implement a function for all node forms, so we are
   // stuck implementing the global form_alter and checking if there is the
   // string node_form in the form id.
-  if (strpos($form_id, 'node_form')) {
+  if (preg_match('/_node_form$/', $form_id)) {
+    $node_type = $form['type']['#value'];
+
     // The $fieldsets array is a list of all supported fieldsets in core
     // for the node form, and their JavaScript summary creators.
-    $fieldsets = array(
-      'book' => 'book',
-      'revision_information' => 'revision',
-      'author' => 'authoring',
-      'options' => 'publishingOptions',
-      'menu' => 'menu',
-      'comment_settings' => 'comment',
-      'path' => 'path',
-      'attachments' => 'attachments',
-    );
-    $node_form = TRUE;
-  }
-  if ($node_form) {
+    $fieldsets = vertical_tabs_fieldsets($node_type);
+
     // The javascript to add to the page.
     $settings = array();
     // Iterate through the form, finding fieldsets.
     foreach (element_children($form) as $key) {
       // We need to make sure that the element we have is a fieldset
       // and the user has access to this field.
-      if (isset($form[$key]['#type']) && $form[$key]['#type'] == 'fieldset' &&
+      if (isset($fieldsets[$key]) &&
+        (isset($form[$key]['#type']) && $form[$key]['#type'] == 'fieldset') &&
         (!isset($form[$key]['#access']) || $form[$key]['#access'] != FALSE)) {
         // Add the JavaScript.
         $settings[$key] = array('name' => $form[$key]['#title']);
@@ -85,6 +75,25 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
       '#theme' => 'vertical_tabs',
     );
   }
+}
+
+/**
+ * Retreive the default set of enabled fieldsets that support vertical tabs.
+ */
+function vertical_tabs_fieldsets($node_type) {
+  $supported = array(
+    'book' => 'book',
+    'revision_information' => 'revision',
+    'author' => 'authoring',
+    'options' => 'publishingOptions',
+    'menu' => 'menu',
+    'comment_settings' => 'comment',
+    'path' => 'path',
+    'attachments' => 'attachments',
+  );
+
+  // TODO: Make a settings page to turn on and off certain fieldsets.
+  return variable_get('vertical_tabs_fieldsets_'. $node_type, $supported);
 }
 
 /**
