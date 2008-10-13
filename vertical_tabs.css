@@ -27,6 +27,8 @@ ul.vertical-tabs-list {
   border-right: 0px;
   z-index: 1;
   border-bottom: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 
@@ -62,6 +64,7 @@ ul.vertical-tabs-list {
 
 .vertical-tabs ul.vertical-tabs-list a {
   border-right: 1px solid #D9EAF5;
+  text-decoration: none;
 }
 
 /* Hover state of tabs */
