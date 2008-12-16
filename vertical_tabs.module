@@ -61,19 +61,21 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     }
 
     // The JavaScript and CSS specific for this form.
-    $js = array(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.node_form.js');
-    $css = array();
-
-    $form['vertical_tabs'] = array(
-      '#vertical_tabs_settings' => $settings,
-      '#vertical_tabs_js' => $js,
-      '#vertical_tabs_css' => $css,
-      '#form_id' => $form_id,
-      '#type' => 'markup',
-      '#value' => '',
-      '#weight' => 100,
-      '#theme' => 'vertical_tabs',
-    );
+    if (!empty($settings)) {
+      $js = array(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.node_form.js');
+      $css = array();
+  
+      $form['vertical_tabs'] = array(
+        '#vertical_tabs_settings' => $settings,
+        '#vertical_tabs_js' => $js,
+        '#vertical_tabs_css' => $css,
+        '#form_id' => $form_id,
+        '#type' => 'markup',
+        '#value' => '',
+        '#weight' => 100,
+        '#theme' => 'vertical_tabs',
+      );
+    }
   }
 }
 
