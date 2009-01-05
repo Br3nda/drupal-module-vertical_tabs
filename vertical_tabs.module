@@ -65,6 +65,21 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
       $js = array(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.node_form.js');
       $css = array();
 
+      // Add Garland specific theming.
+      if ($GLOBALS['theme'] == 'garland') {
+        $garland_stylesheets = variable_get('color_garland_stylesheets', array());
+        if (count($garland_stylesheets) == 0) {
+          $css[] = drupal_get_path('module', 'vertical_tabs') .'/garland/vertical_tabs.garland.css';
+        }
+        else {
+          foreach ($garland_stylesheets as $path) {
+            if (strstr($path, 'vertical_tabs.garland.css')) {
+              $css[] = $path;
+            }
+          }
+        }
+      }
+
       // Build necessary classes on the DIV.
       $classes = array('vertical-tabs');
 
@@ -84,10 +99,76 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
       );
     }
   }
+
+  // Insert the color changer into the theme settings page.
+  // TODO: We could handle other color-enabled themes other than Garland, but
+  // at the same time, these themes could simply include the CSS from
+  // vertical_tabs.garland.css in their style.css files.
+  if ($form_id == 'system_theme_settings' && $form['#parameters'][2] == 'garland' && function_exists('gd_info')) {
+    if (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PUBLIC) {
+      $form['#submit'][] = 'vertical_tabs_color_submit';
+    }
+  }
 }
 
 /**
- * Retreive the default set of enabled fieldsets that support vertical tabs.
+ * Submit handler for the theme settings page.
+ */
+function vertical_tabs_color_submit($form, &$form_state) {
+  $theme = $form_state['values']['theme'];
+  $info = $form_state['values']['info'];
+
+  // Resolve palette
+  $palette = $form_state['values']['palette'];
+  if ($form_state['values']['scheme'] != '') {
+    $scheme = explode(',', $form_state['values']['scheme']);
+    foreach ($palette as $k => $color) {
+      $palette[$k] = array_shift($scheme);
+    }
+  }
+
+  vertical_tabs_generate_stylesheet($theme, $info, $palette);
+}
+
+/**
+ * Color module support for Garland and Vertical Tabs.
+ *
+ * Most of this function is direct copy/paste from color_scheme_form_submit().
+ */
+function vertical_tabs_generate_stylesheet($theme, $info, $palette) {
+  // Current CSS files.
+  $css = variable_get('color_'. $theme .'_stylesheets', array());
+  $files = variable_get('color_'. $theme .'_files', array());
+
+  // Template file.
+  $file = 'vertical_tabs.garland.css';
+
+  // Prepare target locations for generated files.
+  $paths['color'] = file_directory_path() .'/color';
+  $paths['source'] = drupal_get_path('module', 'vertical_tabs') .'/garland/';
+  $paths['files'] = $paths['map'] = array();
+
+  if (count($css)) {
+    $paths['id'] = preg_replace('/^.*?('. $theme .'-[a-zA-Z0-9]+).*?$/', '$1', $css[0]);
+    $paths['target'] = $paths['color'] .'/'. $paths['id'] .'/';
+
+    $style = drupal_load_stylesheet($paths['source'] . $file, FALSE);
+
+    // Rewrite stylesheet with new colors.
+    $style = _color_rewrite_stylesheet($theme, $info, $paths, $palette, $style);
+    $base_file = basename($file);
+    $css[] = $paths['target'] . $base_file;
+    $files[] = $paths['target'] . $base_file;
+    _color_save_stylesheet($paths['target'] . $base_file, $style, $paths);
+
+    // Update the list of files.
+    variable_set('color_'. $theme .'_stylesheets', $css);
+    variable_set('color_'. $theme .'_files', $files);
+  }
+}
+
+/**
+ * Retrieve the default set of enabled fieldsets that support vertical tabs.
  */
 function vertical_tabs_fieldsets($node_type) {
   $supported = array(

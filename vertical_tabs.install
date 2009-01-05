@@ -6,6 +6,9 @@
 function vertical_tabs_install() {
   // Make this module pretty heavy.
   db_query("UPDATE {system} SET weight = 300 WHERE name = 'vertical_tabs'");
+
+  // Generate color stylesheet.
+  vertical_tabs_install_color_generate();
 }
 
 /**
@@ -16,4 +19,24 @@ function vertical_tabs_update_6100() {
   $ret[] = update_sql("UPDATE {system} SET weight = 300 WHERE name = 'vertical_tabs'");
   variable_del('vertical_tabs_settings_form');
   return $ret;
+}
+
+/**
+ * Color-enable the module if using Garland.
+ */
+function vertical_tabs_update_6101() {
+  vertical_tabs_install_color_generate();
+  return array();
+}
+
+/**
+ * Initialize the color-enabled stylesheet if using Garland.
+ */
+function vertical_tabs_install_color_generate() {
+  if (variable_get('theme_default', 'garland') == 'garland' || variable_get('admin_theme', '0') == 'garland') {
+    $theme = 'garland';
+    $info = color_get_info($theme);
+    $palette = color_get_palette($theme);
+    vertical_tabs_generate_stylesheet('garland', $info, $palette);
+  }
 }

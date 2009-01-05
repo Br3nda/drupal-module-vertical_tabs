@@ -45,10 +45,14 @@ div.vertical-tabs-div {
   display: block;
   margin: 0;
   padding: .4em .3em .4em .6em;
-  background: #EFEFEF;
   text-decoration: none;
   text-align: left;
   font-weight: normal;
+}
+
+/* Tab colors */
+.vertical-tabs ul.vertical-tabs-list li {
+  background: #EFEFEF;
   border-bottom: 1px solid #CCC;
   border-right: 1px solid #CCC;
 }
@@ -67,7 +71,6 @@ div.vertical-tabs-div {
 
 /* Hover state of tabs */
 .vertical-tabs ul.vertical-tabs-list a:hover {
-  color: #333;
   text-decoration: none;
   cursor: pointer;
 }
@@ -77,16 +80,19 @@ div.vertical-tabs-div {
 }
 
 /* Selected tab */
-.vertical-tabs ul.vertical-tabs-list li.selected a {
+.vertical-tabs ul.vertical-tabs-list li.selected {
   background: transparent none;
-  color: black;
   border-right: 0;
+}
+
+.vertical-tabs ul.vertical-tabs-list li.selected a {
+  color: black;
 }
 
 /* Reset some important elements of each panel */
 .vertical-tabs .vertical-tabs-div {
   margin: 0;
-  padding: .5em;
+  padding: 12px;
   margin-top: -1px;
   margin-left: -1px;
   background: transparent none;

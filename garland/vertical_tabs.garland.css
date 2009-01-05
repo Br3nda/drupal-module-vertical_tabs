@@ -1,0 +1,31 @@
+/* $Id: vertical_tabs.garland.css,v 1.1.2.1 2009/01/05 23:37:01 quicksketch Exp $ */
+
+/**
+ * @file
+ *   Color module support for Vertical Tabs. Do not change the contents of this
+ *   file! This file is automatically copied to the files directory when the
+ *   theme settings are changed for Garland. It is not compatible with other
+ *   color-module enhanced themes.
+ */
+
+div.vertical-tabs {
+  background: url(gradient-inner.png) repeat-x 0 0;
+  margin: 1em 0;
+}
+
+/* Normal tab colors */
+div.vertical-tabs ul.vertical-tabs-list li {
+  background-color: #EDF5FA;
+  border-color: #D9EAF5;
+}
+
+/* Selected tab colors */
+div.vertical-tabs ul.vertical-tabs-list li.selected a {
+  color: #494949;
+}
+
+/* Border style of content */
+div.vertical-tabs-div,
+div.vertical-tabs ul.vertical-tabs-list {
+  border-color: #D9EAF5;
+}

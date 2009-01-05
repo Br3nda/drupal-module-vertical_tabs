@@ -37,7 +37,7 @@ Drupal.behaviors.verticalTabs = function() {
 
     // Adjust the height of the active field area to be no less than the
     // total height of all the tabs.
-    var max = Math.max($('.vertical-tabs ul').height() - 12, $('.vertical-tabs-div:first').height());
+    var max = Math.max($('.vertical-tabs ul').height() - 25, $('.vertical-tabs-div:first').height());
     $('.vertical-tabs-div').each(function() {
       max = Math.max(max, $(this).height());
     });
@@ -46,6 +46,7 @@ Drupal.behaviors.verticalTabs = function() {
     // Activate the first tab.
     $('.vertical-tabs-div:first').show();
     $('.vertical-tabs ul li:first').addClass('selected');
+
   }
 }
 
