@@ -37,14 +37,17 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     // The javascript to add to the page.
     $settings = array();
     // Iterate through the form, finding fieldsets.
-    foreach (element_children($form) as $key) {
+    foreach (element_children($form) as $delta => $key) {
       // We need to make sure that the element we have is a fieldset
       // and the user has access to this field.
       if (isset($fieldsets[$key]) &&
         (isset($form[$key]['#type']) && $form[$key]['#type'] == 'fieldset') &&
         (!isset($form[$key]['#access']) || $form[$key]['#access'] != FALSE)) {
         // Add the JavaScript.
-        $settings[$key] = array('name' => $form[$key]['#title']);
+        $settings[$key] = array(
+          'name' => $form[$key]['#title'],
+          'weight' => $form[$key]['#weight'] + (0.01 * $delta),
+        );
         // If there's a summary callback, then add it.
         if (isset($form[$key]['#summary_callback']) || isset($fieldsets[$key])) {
           $settings[$key]['callback'] = (isset($form[$key]['#summary_callback']) ? $form[$key]['#summary_callback'] : $fieldsets[$key]);
@@ -79,6 +82,9 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
           }
         }
       }
+
+      // User sort orders by the "weight" key.
+      uasort($settings, '_user_sort');
 
       // Build necessary classes on the DIV.
       $classes = array('vertical-tabs');
