@@ -3,32 +3,33 @@
 }
 
 /* Border style of tabs and content */
-div.vertical-tabs-div,
-ul.vertical-tabs-list {
+div.vertical-tabs-div {
   border: 1px solid #D9EAF5;
+  border-left: none;
 }
 
 /* Make space for the tabs on the side */
 .vertical-tabs {
-  margin-left: 180px;
-}
-
-/* Set the background image on the tabs and content */
-.vertical-tabs,
-.vertical-tabs ul.vertical-tabs-list {
+  padding-left: 180px;
+  position: relative;
+  z-index: 10;
   background: #fff url(gradient-inner.png) repeat-x top;
 }
 
 /* Position and layout of tabs container */
-.vertical-tabs ul.vertical-tabs-list { 
+.vertical-tabs ul.vertical-tabs-list {
+  position: absolute;
+  z-index: 11;
   width: 179px;
-  float: left;
-  margin: 0 0 0 -180px;
-  border-right: 0px;
+  left: 0;
+  margin: 0;
   z-index: 1;
+  border: 1px solid #D9EAF5;
   border-bottom: 0;
+  border-right: 0;
   list-style-type: none;
   padding: 0;
+  background: transparent none;
 }
 
 
@@ -37,14 +38,14 @@ ul.vertical-tabs-list {
   float: none;
   margin: 0;
   padding: 0;
-  background-image: none;
+  background: transparent none;
 }
 
 /* Layout of each tab */
 .vertical-tabs ul.vertical-tabs-list a {
   display: block;
   margin: 0;
-  padding: .4em .3em .1em .6em;
+  padding: .4em .3em .4em .6em;
   background: #EDF5FA;
   text-align: left;
   font-weight: normal;
@@ -60,6 +61,7 @@ ul.vertical-tabs-list {
   line-height: normal;
   min-height: 0;
   white-space: normal;
+  margin: 0;
 }
 
 .vertical-tabs ul.vertical-tabs-list a {
@@ -99,5 +101,5 @@ ul.vertical-tabs-list {
 }
 
 #edit-book-bid-wrapper .description {
-  clear:none;
+  clear: none;
 }
