@@ -4,7 +4,7 @@
 
 /* Border style of tabs and content */
 div.vertical-tabs-div {
-  border: 1px solid #D9EAF5;
+  border: 1px solid #CCC;
   border-left: none;
 }
 
@@ -13,7 +13,6 @@ div.vertical-tabs-div {
   padding-left: 180px;
   position: relative;
   z-index: 10;
-  background: #fff url(gradient-inner.png) repeat-x top;
 }
 
 /* Position and layout of tabs container */
@@ -24,7 +23,7 @@ div.vertical-tabs-div {
   left: 0;
   margin: 0;
   z-index: 1;
-  border: 1px solid #D9EAF5;
+  border: 1px solid #CCC;
   border-bottom: 0;
   border-right: 0;
   list-style-type: none;
@@ -46,10 +45,12 @@ div.vertical-tabs-div {
   display: block;
   margin: 0;
   padding: .4em .3em .4em .6em;
-  background: #EDF5FA;
+  background: #EFEFEF;
+  text-decoration: none;
   text-align: left;
   font-weight: normal;
-  border-bottom: 1px solid #D9EAF5;
+  border-bottom: 1px solid #CCC;
+  border-right: 1px solid #CCC;
 }
 
 .vertical-tabs ul.vertical-tabs-list a.vertical-tabs-nodescription {
@@ -64,14 +65,9 @@ div.vertical-tabs-div {
   margin: 0;
 }
 
-.vertical-tabs ul.vertical-tabs-list a {
-  border-right: 1px solid #D9EAF5;
-  text-decoration: none;
-}
-
 /* Hover state of tabs */
 .vertical-tabs ul.vertical-tabs-list a:hover {
-  color: #0062A0;
+  color: #333;
   text-decoration: none;
   cursor: pointer;
 }
