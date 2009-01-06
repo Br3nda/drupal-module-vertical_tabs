@@ -84,3 +84,19 @@ Drupal.verticalTabs.path = function() {
     return Drupal.t('No alias');
   }
 }
+
+Drupal.verticalTabs.flag = function() {
+  var flags = [];
+  $('div.vertical-tabs-flag input.form-checkbox').each(function() {
+    if (this.checked) {
+      flags.push(this.name.replace(/flag\[([a-z0-9]+)\]/, '$1'));
+    }
+  });
+
+  if (flags.length) {
+    return flags.join(', ');
+  }
+  else {
+    return Drupal.t('No flags');
+  }
+}
