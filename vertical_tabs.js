@@ -25,11 +25,12 @@ Drupal.behaviors.verticalTabs = function() {
       // Add the fieldset contents to the toggled fieldsets.
       $('.vertical-tabs-' + k + ' > .fieldset-wrapper').appendTo(fieldsets)
       .addClass('vertical-tabs-' + k)
-      .addClass('vertical-tabs-div');
-
-      if (v.callback && Drupal.verticalTabs[v.callback]) {
-        ul.bind('change', function() { $('.vertical-tabs-list-' + k + ' > .description').html(Drupal.verticalTabs[v.callback].apply(this, v.args)); })
-      }
+      .addClass('vertical-tabs-div')
+      .find('input, select, textarea').bind('change', function() {
+        if (v.callback && Drupal.verticalTabs[v.callback]) {
+          $('a.vertical-tabs-list-' + k + ' span.description').html(Drupal.verticalTabs[v.callback].apply(this, v.args));
+        }
+      });
       $('.vertical-tabs-' + k).remove();
     });
 
@@ -53,7 +54,7 @@ Drupal.behaviors.verticalTabs = function() {
 Drupal.behaviors.verticalTabsReload = function() {
   $.each(Drupal.settings.verticalTabs, function(k, v) {
     if (v.callback && Drupal.verticalTabs[v.callback]) {
-      $('.vertical-tabs-' + k + '.vertical-tabs-processed legend a span').html(Drupal.verticalTabs[v.callback].apply(this, v.args));
+      $('a.vertical-tabs-list-' + k + ' span.description').html(Drupal.verticalTabs[v.callback].apply(this, v.args));
     }
   });
 }
