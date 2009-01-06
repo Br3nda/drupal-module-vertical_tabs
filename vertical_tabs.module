@@ -71,7 +71,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
       // Add Garland specific theming.
       if ($GLOBALS['theme'] == 'garland') {
         $garland_stylesheets = variable_get('color_garland_stylesheets', array());
-        if (count($garland_stylesheets) == 0) {
+        if (count($garland_stylesheets) == 0 || !module_exists('color')) {
           $css[] = drupal_get_path('module', 'vertical_tabs') .'/garland/vertical_tabs.garland.css';
         }
         else {
