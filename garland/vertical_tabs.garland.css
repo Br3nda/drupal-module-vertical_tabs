@@ -1,4 +1,4 @@
-/* $Id: vertical_tabs.garland.css,v 1.1.2.1 2009/01/05 23:37:01 quicksketch Exp $ */
+/* $Id: vertical_tabs.garland.css,v 1.1.2.2 2009/01/06 03:45:38 quicksketch Exp $ */
 
 /**
  * @file
@@ -9,17 +9,21 @@
  */
 
 div.vertical-tabs {
-  background: url(gradient-inner.png) repeat-x 0 0;
+  background: #FFF url(gradient-inner.png) repeat-x 0 0;
   margin: 1em 0;
 }
 
 /* Normal tab colors */
 div.vertical-tabs ul.vertical-tabs-list li {
-  background-color: #EDF5FA;
+  background: #EDF5FA none;
   border-color: #D9EAF5;
 }
 
 /* Selected tab colors */
+div.vertical-tabs ul.vertical-tabs-list li.selected {
+  background-color: transparent;
+}
+
 div.vertical-tabs ul.vertical-tabs-list li.selected a {
   color: #494949;
 }
@@ -28,4 +32,8 @@ div.vertical-tabs ul.vertical-tabs-list li.selected a {
 div.vertical-tabs-div,
 div.vertical-tabs ul.vertical-tabs-list {
   border-color: #D9EAF5;
+}
+
+div.vertical-tabs-div {
+  border-left: none;
 }
