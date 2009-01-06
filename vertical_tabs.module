@@ -40,7 +40,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     foreach (element_children($form) as $delta => $key) {
       // We need to make sure that the element we have is a fieldset
       // and the user has access to this field.
-      if (isset($fieldsets[$key]) &&
+      if (in_array($key, $fieldsets) &&
         (isset($form[$key]['#type']) && $form[$key]['#type'] == 'fieldset') &&
         (!isset($form[$key]['#access']) || $form[$key]['#access'] != FALSE)) {
         // Add the JavaScript.
@@ -49,8 +49,8 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
           'weight' => $form[$key]['#weight'] + (0.01 * $delta),
         );
         // If there's a summary callback, then add it.
-        if (isset($form[$key]['#summary_callback']) || isset($fieldsets[$key])) {
-          $settings[$key]['callback'] = (isset($form[$key]['#summary_callback']) ? $form[$key]['#summary_callback'] : $fieldsets[$key]);
+        if (isset($form[$key]['#summary_callback']) || in_array($key, $fieldsets)) {
+          $settings[$key]['callback'] = (isset($form[$key]['#summary_callback']) ? $form[$key]['#summary_callback'] : $key);
           $settings[$key]['args'] = (isset($form[$key]['#summary_arguments']) ? $form[$key]['#summary_arguments'] : array());
         }
         // Add a class to identify the fieldset.
@@ -106,6 +106,10 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     }
   }
 
+  if ($form_id == 'node_type_form') {
+    $form += vertical_tabs_node_type_form($form['#node_type']->type);
+  }
+
   // Insert the color changer into the theme settings page.
   // TODO: We could handle other color-enabled themes other than Garland, but
   // at the same time, these themes could simply include the CSS from
@@ -115,6 +119,54 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
       $form['#submit'][] = 'vertical_tabs_color_submit';
     }
   }
+}
+
+function vertical_tabs_node_type_form($node_type) {
+  module_load_include('inc', 'node', 'node.pages');
+
+  // Build a psuedo-node for a sample node form.
+  $node = (object) array(
+    'type' => $node_type,
+    'name' => '',
+  );
+
+  // Build a sample node form to find fieldsets.
+  $node_form_state = array('values' => array());
+  $node_form_id = $node_type .'_node_form';
+  $args = array(
+    $node_form_id,
+    $node_form_state,
+    $node
+  );
+  $node_form = call_user_func_array('drupal_retrieve_form', $args);
+  $node_form['#post'] = $node_form_state['values'];
+  drupal_prepare_form($node_form_id, $node_form, $node_form_state);
+  uasort($node_form, 'element_sort');
+
+  // Find all fieldsets.
+  $fieldsets = array();
+  foreach (element_children($node_form) as $key) {
+    if (isset($node_form[$key]['#type']) && $node_form[$key]['#type'] == 'fieldset' && isset($node_form[$key]['#title'])) {
+      $fieldsets[$key] = $node_form[$key]['#title'];
+    }
+  }
+
+  $form = array();
+
+  $form['vertical_tabs'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Vertical tabs'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#description' => t('The selected fieldsets will be rendered as vertical tabs for this content type. The tabs are rendered in the same version as the original form\'s fieldsets.'),
+  );
+  $form['vertical_tabs']['vertical_tabs_fieldsets'] = array(
+    '#type' => 'checkboxes',
+    '#options' => $fieldsets,
+    '#default_value' => vertical_tabs_fieldsets($node_type),
+  );
+
+  return $form;
 }
 
 /**
@@ -178,14 +230,14 @@ function vertical_tabs_generate_stylesheet($theme, $info, $palette) {
  */
 function vertical_tabs_fieldsets($node_type) {
   $supported = array(
-    'book' => 'book',
-    'revision_information' => 'revision',
-    'author' => 'authoring',
-    'options' => 'publishingOptions',
-    'menu' => 'menu',
-    'comment_settings' => 'comment',
-    'path' => 'path',
-    'attachments' => 'attachments',
+    'book',
+    'revision_information',
+    'author',
+    'options',
+    'menu',
+    'comment_settings',
+    'path',
+    'attachments',
   );
 
   // TODO: Make a settings page to turn on and off certain fieldsets.

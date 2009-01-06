@@ -10,7 +10,7 @@ Drupal.verticalTabs.book = function() {
   return text;
 }
 
-Drupal.verticalTabs.revision = function() {
+Drupal.verticalTabs.revision_information = function() {
   var val = $('#edit-revision').attr('checked');
   if (val) {
     return Drupal.t('Create new revision');
@@ -20,7 +20,7 @@ Drupal.verticalTabs.revision = function() {
   }
 }
 
-Drupal.verticalTabs.authoring = function() {
+Drupal.verticalTabs.author = function() {
   var name = $('#edit-name').val(), date = $('#edit-date').val();
   if (date) {
     return Drupal.t('By @name on @date', { '@name': name, '@date': date });
@@ -30,7 +30,7 @@ Drupal.verticalTabs.authoring = function() {
   }
 }
 
-Drupal.verticalTabs.publishingOptions = function() {
+Drupal.verticalTabs.options = function() {
   var vals = [];
   if ($('#edit-status').attr('checked')) {
     vals.push(Drupal.t('Published'));
@@ -56,7 +56,7 @@ Drupal.verticalTabs.menu = function() {
   }
 }
 
-Drupal.verticalTabs.comment = function() {
+Drupal.verticalTabs.comment_settings = function() {
   return $('.vertical-tabs-comment_settings input[checked]').parent().text().replace(/^\s*(.*)\s*$/, '$1');
 }
 
