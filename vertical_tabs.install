@@ -34,9 +34,11 @@ function vertical_tabs_update_6101() {
  */
 function vertical_tabs_install_color_generate() {
   if (variable_get('theme_default', 'garland') == 'garland' || variable_get('admin_theme', '0') == 'garland') {
-    $theme = 'garland';
-    $info = color_get_info($theme);
-    $palette = color_get_palette($theme);
-    vertical_tabs_generate_stylesheet('garland', $info, $palette);
+    if (module_exists('color')) {
+      $theme = 'garland';
+      $info = color_get_info($theme);
+      $palette = color_get_palette($theme);
+      vertical_tabs_generate_stylesheet('garland', $info, $palette);
+    }
   }
 }
