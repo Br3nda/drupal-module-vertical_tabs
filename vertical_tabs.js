@@ -22,8 +22,15 @@ Drupal.behaviors.verticalTabs = function() {
           return false;
         });
 
+      // Find the contents of the fieldset (depending on #collapsible property).
+      var fieldsetContents = $('.vertical-tabs-' + k + ' > .fieldset-wrapper');
+      if (fieldsetContents.size() == 0) {
+        fieldsetContents = $('<div class="fieldset-wrapper"></div>');
+        $('.vertical-tabs-' + k).children('div').appendTo(fieldsetContents);
+      }
+
       // Add the fieldset contents to the toggled fieldsets.
-      $('.vertical-tabs-' + k + ' > .fieldset-wrapper').appendTo(fieldsets)
+      fieldsetContents.appendTo(fieldsets)
       .addClass('vertical-tabs-' + k)
       .addClass('vertical-tabs-div')
       .find('input, select, textarea').bind('change', function() {
