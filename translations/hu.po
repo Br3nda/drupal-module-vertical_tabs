@@ -1,5 +1,5 @@
-# Hungarian translation of vertical_tabs (6.x-1.x-dev)
-# Copyright (c) 2008 by the Hungarian translation team
+# Hungarian translation of vertical_tabs (6.x-1.0-beta1)
+# Copyright (c) 2009 by the Hungarian translation team
 # Generated from files:
 #  vertical_tabs/vertical_tabs.node_form.js: n/a
 #  vertical_tabs/vertical_tabs.module: n/a
@@ -7,9 +7,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: vertical_tabs (6.x-1.x-dev)\n"
-"POT-Creation-Date: 2008-11-21 04:34-0600\n"
-"PO-Revision-Date: 2008-11-08 11:17-0600\n"
+"Project-Id-Version: vertical_tabs (6.x-1.0-beta1)\n"
+"POT-Creation-Date: 2009-01-27 17:31-0600\n"
+"PO-Revision-Date: 2009-01-24 03:56-0600\n"
 "Last-Translator: Balogh Zoltán\n"
 "Language-Team: Hungarian http://forditas.mindworks.hu\n"
 "MIME-Version: 1.0\n"
@@ -55,10 +55,6 @@ msgstr "vertical_tabs"
 msgid "Vertical Tabs"
 msgstr "Függőleges fülek"
 
-#: vertical_tabs.info:0
-msgid "Provdes vertical tabs for the node form"
-msgstr "Függőleges füleket biztosít a tartalom űrlaphoz"
-
 #: vertical_tabs.node_form.js:0
 msgid "Not in book"
 msgstr "Nincs könyvben"
@@ -102,4 +98,30 @@ msgstr "Álnév: @alias"
 #: vertical_tabs.node_form.js:0
 msgid "No alias"
 msgstr "Nincs álnév"
+
+#: vertical_tabs.module:158
+msgid "Vertical tabs"
+msgstr "Függőleges fülek"
+
+#: vertical_tabs.module:161
+msgid ""
+"The selected fieldsets will be rendered as vertical tabs for this "
+"content type. The tabs are rendered in the same version as the "
+"original form's fieldsets."
+msgstr ""
+"A kiválasztott mezőcsoportok függőleges fülekként fognak "
+"megjelenni ebben a tartalom típusban. A fülek megjelenési sorrendje "
+"megegyezik az eredeti ürlap mezőcsoportjaival."
+
+#: vertical_tabs.info:0
+msgid "Provides vertical tabs for the node form."
+msgstr "Függőleges füleket ad a tartalom beküldő űrlaphoz."
+
+#: vertical_tabs.node_form.js:0
+msgid "No flags"
+msgstr "Nincsenek jelzők"
+
+#: vertical_tabs.node_form.js:0
+msgid "No terms"
+msgstr "Nincsenek kifejezések"
 
