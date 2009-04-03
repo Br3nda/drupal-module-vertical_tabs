@@ -43,18 +43,16 @@ Drupal.behaviors.verticalTabs = function() {
 
     $('div.vertical-tabs').html(ul).append(fieldsets);
 
-    // Adjust the height of the active field area to be no less than the
-    // total height of all the tabs.
-    var max = Math.max($('.vertical-tabs ul').height() - 25, $('.vertical-tabs-div:first').height());
-    $('.vertical-tabs-div').each(function() {
-      max = Math.max(max, $(this).height());
-    });
-    $('.vertical-tabs-div').height(max).hide();
-
+    // Adjust the min-height property of each field area to match the height of the vertical tabs list, then hide them.
+    if ($.browser.msie && $.browser.version.substr(0,1) == "6") {
+      $('.vertical-tabs-div').add('.vertical-tabs').css('height', $('.vertical-tabs-list').height() - 25); // IE6 min-height doesn't work, so use 'height' instead
+    } else {
+      $('.vertical-tabs-div').css('minHeight', $('.vertical-tabs-list').height() - 25);
+    }
     // Activate the first tab.
+    $('.vertical-tabs-div').hide();
     $('.vertical-tabs-div:first').show();
     $('.vertical-tabs ul li:first').addClass('selected');
-
   }
 }
 
