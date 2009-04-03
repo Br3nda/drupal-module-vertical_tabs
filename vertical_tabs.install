@@ -38,6 +38,7 @@ function vertical_tabs_install_color_generate() {
       $theme = 'garland';
       $info = color_get_info($theme);
       $palette = color_get_palette($theme);
+      drupal_load('module', 'vertical_tabs');
       vertical_tabs_generate_stylesheet('garland', $info, $palette);
     }
   }
