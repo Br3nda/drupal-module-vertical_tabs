@@ -26,7 +26,8 @@ Drupal.behaviors.verticalTabs = function() {
       var fieldsetContents = $('.vertical-tabs-' + k + ' > .fieldset-wrapper');
       if (fieldsetContents.size() == 0) {
         fieldsetContents = $('<div class="fieldset-wrapper"></div>');
-        $('.vertical-tabs-' + k).children('div').appendTo(fieldsetContents);
+        $('.vertical-tabs-' + k).children('*').appendTo(fieldsetContents);
+        fieldsetContents.children('legend').remove();
       }
 
       // Add the fieldset contents to the toggled fieldsets.
