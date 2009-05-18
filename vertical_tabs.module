@@ -261,8 +261,8 @@ function theme_vertical_tabs_js_css($js, $css, $settings, $form_id) {
   static $js_added = array();
   if (!isset($js_added[$form_id])) {
     drupal_add_js(array('verticalTabs' => $settings), 'setting');
-    drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.js', 'theme');
-    drupal_add_css(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.css', 'theme');
+    drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.js');
+    drupal_add_css(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.css');
     foreach ($js as $path) {
       drupal_add_js($path, 'theme');
     }
