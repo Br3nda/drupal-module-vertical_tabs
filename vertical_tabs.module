@@ -264,10 +264,10 @@ function theme_vertical_tabs_js_css($js, $css, $settings, $form_id) {
     drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.js');
     drupal_add_css(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.css');
     foreach ($js as $path) {
-      drupal_add_js($path, 'theme');
+      drupal_add_js($path);
     }
     foreach ($css as $path) {
-      drupal_add_css($path, 'theme');
+      drupal_add_css($path);
     }
     $js_added[$form_id] = TRUE;
   }
