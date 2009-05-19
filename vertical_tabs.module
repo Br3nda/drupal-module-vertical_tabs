@@ -87,7 +87,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
       uasort($settings, '_user_sort');
 
       // Build necessary classes on the DIV.
-      $classes = array('vertical-tabs');
+      $classes = array('vertical-tabs', 'clear-block');
 
       // Extra classes for configuration?
       // $classes[] = 'some-option';

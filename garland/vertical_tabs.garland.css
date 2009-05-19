@@ -1,4 +1,4 @@
-/* $Id: vertical_tabs.garland.css,v 1.1.2.2 2009/01/06 03:45:38 quicksketch Exp $ */
+/* $Id: vertical_tabs.garland.css,v 1.1.2.3 2009/05/19 01:39:33 quicksketch Exp $ */
 
 /**
  * @file
@@ -8,32 +8,45 @@
  *   color-module enhanced themes.
  */
 
+/* Keep the background position at 0 for filters and vertical tabs. */
+*:first-child+html fieldset.vertical-tabs-pane {
+  background-position: 0 0;
+}
+
+/**
+ * Vertical tabs.
+ */
 div.vertical-tabs {
-  background: #FFF url(gradient-inner.png) repeat-x 0 0;
-  margin: 1em 0;
+  margin-right: 5%;
+  border-color: #d9eaf5;
 }
 
-/* Normal tab colors */
+div.vertical-tabs .vertical-tabs-panes fieldset.vertical-tabs-pane {
+  padding: 0.5em 1em;
+}
+
+div.vertical-tabs ul.vertical-tabs-list {
+  border-color: #d9eaf5;
+}
+
 div.vertical-tabs ul.vertical-tabs-list li {
-  background: #EDF5FA none;
-  border-color: #D9EAF5;
+  background-color: #edf5fa;
+  border-color: #d9eaf5;
 }
 
-/* Selected tab colors */
 div.vertical-tabs ul.vertical-tabs-list li.selected {
-  background-color: transparent;
+  background: #fff repeat-x 0 0;
 }
 
-div.vertical-tabs ul.vertical-tabs-list li.selected a {
+div.vertical-tabs ul.vertical-tabs-list li.selected.first {
+  background-image: url(gradient-inner.png);
+}
+
+div.vertical-tabs ul.vertical-tabs-list li.selected a strong {
   color: #494949;
 }
 
-/* Border style of content */
-div.vertical-tabs-div,
-div.vertical-tabs ul.vertical-tabs-list {
-  border-color: #D9EAF5;
-}
-
-div.vertical-tabs-div {
-  border-left: none;
+.vertical-tab-button .summary {
+  font-size: 0.92em;
+  color: #898989;
 }
