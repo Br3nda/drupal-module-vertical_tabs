@@ -32,7 +32,7 @@ function vertical_tabs_update_6101() {
 /**
  * Regenerate the stylesheets if using Garland to accomidate for CSS changes.
  */
-function vertical_tabs_update_6101() {
+function vertical_tabs_update_6102() {
   vertical_tabs_install_color_generate();
   return array();
 }
