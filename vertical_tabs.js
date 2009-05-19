@@ -3,7 +3,7 @@ Drupal.verticalTabs = Drupal.verticalTabs || {};
 Drupal.behaviors.verticalTabs = function() {
   if (!$('.vertical-tabs-list').size()) {
     var ul = $('<ul class="vertical-tabs-list"></ul>');
-    var fieldsets = $('<div class="vertical-tabs-panes"></div>');
+    var panes = $('<div class="vertical-tabs-panes"></div>');
     $.each(Drupal.settings.verticalTabs, function(k, v) {
       var summary = '', cssClass = 'vertical-tabs-list-' + k;
       if (v.callback && Drupal.verticalTabs[v.callback]) {
@@ -20,7 +20,7 @@ Drupal.behaviors.verticalTabs = function() {
           $(this).parent().addClass('selected').siblings().removeClass('selected');
           $('.vertical-tabs-' + k).show().siblings('.vertical-tabs-pane').hide();
           return false;
-        });
+      });
 
       // Find the contents of the fieldset (depending on #collapsible property).
       var fieldset = $('<fieldset></fieldset>');
@@ -36,7 +36,7 @@ Drupal.behaviors.verticalTabs = function() {
       fieldset.children('legend').remove();
 
       // Add the fieldset contents to the toggled fieldsets.
-      fieldset.appendTo(fieldsets)
+      fieldset.appendTo(panes)
       .addClass('vertical-tabs-' + k)
       .addClass('vertical-tabs-pane')
       .find('input, select, textarea').bind('change', function() {
@@ -47,7 +47,7 @@ Drupal.behaviors.verticalTabs = function() {
       $('.vertical-tabs-' + k).remove();
     });
 
-    $('div.vertical-tabs').html(ul).append(fieldsets);
+    $('div.vertical-tabs').html(ul).append(panes);
 
     // Activate the first tab.
     $('fieldset.vertical-tabs-pane').hide();
