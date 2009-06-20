@@ -1,4 +1,4 @@
-# $Id: de.po,v 1.1.2.1 2009/06/20 15:06:59 hass Exp $
+# $Id: de.po,v 1.1.2.2 2009/06/20 15:25:14 hass Exp $
 #
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: German translation of vertical_tabs\n"
 "POT-Creation-Date: 2009-06-20 16:50+0200\n"
-"PO-Revision-Date: 2009-06-20 17:05+0100\n"
+"PO-Revision-Date: 2009-06-20 17:24+0100\n"
 "Last-Translator: Alexander Haß\n"
 "Language-Team: Alexander Haß\n"
 "MIME-Version: 1.0\n"
@@ -84,7 +84,7 @@ msgstr "Auf der Startseite"
 
 #: vertical_tabs.node_form.js:0
 msgid "Sticky on top of lists"
-msgstr "Am Anfang von Listen"
+msgstr "Oben in Listen"
 
 #: vertical_tabs.node_form.js:0
 msgid "None"
