@@ -106,7 +106,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     }
   }
 
-  if ($form_id == 'node_type_form' && $form['#node_type']->type) {
+  if ($form_id == 'node_type_form' && $form['#node_type']->type && !$form['#programmed']) {
     $form += vertical_tabs_node_type_form($form['#node_type']->type);
   }
 
