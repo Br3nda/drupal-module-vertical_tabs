@@ -137,6 +137,7 @@ function vertical_tabs_node_type_form($node_type) {
   $node = (object) array(
     'type' => $node_type,
     'name' => '',
+    'vid' => 0,
   );
 
   // Build a sample node form to find fieldsets.
