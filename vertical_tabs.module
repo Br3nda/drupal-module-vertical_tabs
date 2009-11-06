@@ -31,8 +31,9 @@ function vertical_tabs_theme() {
  *   TRUE if the vertical tabs were added to the form, otherwise FALSE.
  */
 function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = NULL) {
-  // The javascript to add to the page.
+  global $theme;
   $settings = array();
+
   // Iterate through the form, finding fieldsets.
   foreach (element_children($form) as $delta => $key) {
     // We need to make sure that the element we have is a fieldset
@@ -61,15 +62,17 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = NULL) {
   if (!empty($settings)) {
     $js = $css = array();
 
-    // Add Garland specific theming.
-    if ($GLOBALS['theme'] == 'garland') {
-      $garland_stylesheets = variable_get('color_garland_stylesheets', array());
-      if (count($garland_stylesheets) == 0 || !module_exists('color')) {
-        $css[] = drupal_get_path('module', 'vertical_tabs') .'/garland/vertical_tabs.garland.css';
+    // Add theme-specific CSS.
+    if (isset($theme)) {
+      $theme_stylesheets = variable_get('color_' . $theme . '_stylesheets', array());
+      if (!$theme_stylesheets || !module_exists('color')) {
+        // The theme-specific CSS will be only included by drupal_get_css() if
+        // it exists so we do not need to check file_exists() here.
+        $css[] = drupal_get_path('module', 'vertical_tabs') . '/' . $theme . '/vertical_tabs.' . $theme . '.css';
       }
       else {
-        foreach ($garland_stylesheets as $path) {
-          if (strstr($path, 'vertical_tabs.garland.css')) {
+        foreach ($theme_stylesheets as $path) {
+          if (strpos($path, 'vertical_tabs.' . $theme . '.css') !== FALSE) {
             $css[] = $path;
           }
         }
@@ -102,7 +105,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
   // just node_form, we can't implement a function for all node forms, so we are
   // stuck implementing the global form_alter and checking if there is the
   // string node_form in the form id.
-  if (preg_match('/_node_form$/', $form_id)) {
+  if (substr($form_id, -10) == '_node_form') {
     $node_type = $form['type']['#value'];
 
     // The $fieldsets array is a list of all supported fieldsets in core
