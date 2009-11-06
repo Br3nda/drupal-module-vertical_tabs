@@ -179,6 +179,15 @@ function vertical_tabs_node_type_form(&$form, $node_type) {
 }
 
 /**
+ * Implementation of hook_node_type().
+ */
+function vertical_tabs_node_type($op, $info) {
+  if ($op == 'delete') {
+    variable_del('vertical_tabs_fieldsets_' . $info->type);
+  }
+}
+
+/**
  * Submit handler for the theme settings page.
  */
 function vertical_tabs_color_submit($form, &$form_state) {
