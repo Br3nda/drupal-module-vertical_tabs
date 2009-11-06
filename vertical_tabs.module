@@ -116,21 +116,30 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
   // stuck implementing the global form_alter and checking if there is the
   // string node_form in the form id.
   if (substr($form_id, -10) == '_node_form') {
-    $node_type = $form['type']['#value'];
-
-    // The $fieldsets array is a list of all supported fieldsets in core
-    // for the node form, and their JavaScript summary creators.
-    $fieldsets = vertical_tabs_fieldsets($node_type);
-
-    if (vertical_tabs_add_vertical_tabs($form, $fieldsets)) {
-      drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.node_form.js');
-      $form['vertical_tabs']['#weight'] = 100;
-    }
+    $form['#pre_render'][] = 'vertical_tabs_node_form_pre_render';
   }
 
   if ($form_id == 'node_type_form' && $form['#node_type']->type) {
     vertical_tabs_node_type_form($form, $form['#node_type']->type);
   }
+}
+
+/**
+ * Pre-render function for the node form.
+ */
+function vertical_tabs_node_form_pre_render($form) {
+  $node_type = $form['type']['#value'];
+
+  // The $fieldsets array is a list of all supported fieldsets in core
+  // for the node form, and their JavaScript summary creators.
+  $fieldsets = vertical_tabs_fieldsets($node_type);
+
+  if (vertical_tabs_add_vertical_tabs($form, $fieldsets)) {
+    drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.node_form.js');
+    $form['vertical_tabs']['#weight'] = 100;
+  }
+
+  return $form;
 }
 
 function vertical_tabs_node_type_form(&$form, $node_type) {
