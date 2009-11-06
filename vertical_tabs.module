@@ -265,16 +265,12 @@ function vertical_tabs_fieldsets($node_type) {
 /**
  * After build function to add vertical tabs JS and CSS to the form.
  */
-function theme_vertical_tabs(&$form_element) {
+function theme_vertical_tabs($form_element) {
   // Add Vertical Tabs JS and CSS.
   theme('vertical_tabs_js_css', $form_element['#vertical_tabs_js'], $form_element['#vertical_tabs_css'], $form_element['#vertical_tabs_settings'], $form_element['#form_id']);
-
   return '<div class="'. $form_element['#attributes']['class'] .'">&nbsp;</div>';
 }
 
-/**
- *
- */
 function theme_vertical_tabs_js_css($js, $css, $settings, $form_id) {
   static $js_added = array();
   if (!isset($js_added[$form_id])) {
