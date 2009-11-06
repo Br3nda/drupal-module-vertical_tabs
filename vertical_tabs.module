@@ -101,6 +101,16 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = NULL) {
  * Implementation of hook_form_alter.
  */
 function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
+  // Add our color-handling submit handler to the color settings form.
+  if ($form_id == 'system_theme_settings' && isset($form['color']) && function_exists('gd_info')) {
+    $form['#submit'][] = 'vertical_tabs_color_submit';
+  }
+
+  // Skip programmed forms when adding vertical tabs.
+  if ($form['#programmed']) {
+    return;
+  }
+
   // Check to see which form we are in. Since the node form's form id is not
   // just node_form, we can't implement a function for all node forms, so we are
   // stuck implementing the global form_alter and checking if there is the
@@ -118,22 +128,12 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     }
   }
 
-  if ($form_id == 'node_type_form' && $form['#node_type']->type && !$form['#programmed']) {
-    $form += vertical_tabs_node_type_form($form['#node_type']->type);
-  }
-
-  // Insert the color changer into the theme settings page.
-  // TODO: We could handle other color-enabled themes other than Garland, but
-  // at the same time, these themes could simply include the CSS from
-  // vertical_tabs.garland.css in their style.css files.
-  if ($form_id == 'system_theme_settings' && $form['#parameters'][2] == 'garland' && function_exists('gd_info')) {
-    if (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PUBLIC) {
-      $form['#submit'][] = 'vertical_tabs_color_submit';
-    }
+  if ($form_id == 'node_type_form' && $form['#node_type']->type) {
+    vertical_tabs_node_type_form($form, $form['#node_type']->type);
   }
 }
 
-function vertical_tabs_node_type_form($node_type) {
+function vertical_tabs_node_type_form(&$form, $node_type) {
   module_load_include('inc', 'node', 'node.pages');
 
   // Build a psuedo-node for a sample node form.
@@ -164,8 +164,6 @@ function vertical_tabs_node_type_form($node_type) {
     }
   }
 
-  $form = array();
-
   $form['vertical_tabs'] = array(
     '#type' => 'fieldset',
     '#title' => t('Vertical tabs'),
@@ -178,8 +176,6 @@ function vertical_tabs_node_type_form($node_type) {
     '#options' => $fieldsets,
     '#default_value' => vertical_tabs_fieldsets($node_type),
   );
-
-  return $form;
 }
 
 /**
