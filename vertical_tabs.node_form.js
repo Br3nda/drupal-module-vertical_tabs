@@ -1,4 +1,4 @@
-// $Id: vertical_tabs.node_form.js,v 1.1.2.7 2009/11/06 23:31:46 davereid Exp $
+// $Id: vertical_tabs.node_form.js,v 1.1.2.8 2009/11/06 23:40:51 davereid Exp $
 
 Drupal.verticalTabs = Drupal.verticalTabs || {};
 
@@ -14,12 +14,16 @@ Drupal.verticalTabs.book = function() {
 }
 
 Drupal.verticalTabs.revision_information = function() {
-  var val = $('#edit-revision').attr('checked');
-  if (val) {
-    return Drupal.t('Create new revision');
+  if ($('#edit-revision').length) {
+    if ($('#edit-revision').attr('checked')) {
+      return Drupal.t('Create new revision');
+    }
+    else {
+      return Drupal.t('Don\'t create new revision');
+    }
   }
   else {
-    return Drupal.t('Don\'t create new revision');
+    return '';
   }
 }
 
