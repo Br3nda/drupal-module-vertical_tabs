@@ -33,6 +33,7 @@ function vertical_tabs_theme() {
 function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = NULL) {
   global $theme;
   $settings = array();
+  $weight = 0;
 
   // Iterate through the form, finding fieldsets.
   foreach (element_children($form) as $delta => $key) {
@@ -44,7 +45,7 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = NULL) {
       // Add the JavaScript.
       $settings[$key] = array(
         'name' => $form[$key]['#title'],
-        'weight' => (isset($form[$key]['#weight']) ? $form[$key]['#weight'] : 0) + (0.01 * $delta),
+        'weight' => (isset($form[$key]['#weight']) ? $form[$key]['#weight'] : 0) + (0.001 * $delta),
         'callback' => (isset($form[$key]['#summary_callback']) ? $form[$key]['#summary_callback'] : $key),
         'args' => (isset($form[$key]['#summary_arguments']) ? $form[$key]['#summary_arguments'] : array()),
       );
@@ -55,6 +56,9 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = NULL) {
       else {
         $form[$key]['#attributes']['class'] = 'vertical-tabs-fieldset vertical-tabs-'. $key;
       }
+
+      // Track the maximum weight for the vertical tabs element.
+      $weight = max($weight, $settings[$key]['weight']);
     }
   }
 
@@ -91,6 +95,7 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = NULL) {
       '#value' => '',
       '#theme' => 'vertical_tabs',
       '#attributes' => array('class' => 'vertical-tabs clear-block'),
+      '#weight' => $weight,
     );
 
     return TRUE;
@@ -136,7 +141,6 @@ function vertical_tabs_node_form_pre_render($form) {
 
   if (vertical_tabs_add_vertical_tabs($form, $fieldsets)) {
     drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.node_form.js');
-    $form['vertical_tabs']['#weight'] = 100;
   }
 
   return $form;
