@@ -1,5 +1,5 @@
 <?php
-// $Id: vertical_tabs.install,v 1.1.2.8 2009/11/06 23:03:10 davereid Exp $
+// $Id: vertical_tabs.install,v 1.1.2.9 2009/11/18 20:28:34 davereid Exp $
 
 /**
  * @file
@@ -18,7 +18,7 @@ function vertical_tabs_install() {
 }
 
 /**
- * Implementation of hook_install().
+ * Implementation of hook_uninstall().
  */
 function vertical_tabs_uninstall() {
   $node_types = array_keys(node_get_types('names'));

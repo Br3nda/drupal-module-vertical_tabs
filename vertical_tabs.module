@@ -66,6 +66,12 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = NULL) {
   if (!empty($settings)) {
     $js = $css = array();
 
+    // Add form-specific JS.
+    $form_js = drupal_get_path('module', 'vertical_tabs') . '/vertical_tabs.' . $form['form_id']['#value'] . '.js';
+    if (file_exists($form_js)) {
+      $js[] = $form_js;
+    }
+
     // Add theme-specific CSS.
     if (isset($theme)) {
       $theme_stylesheets = variable_get('color_' . $theme . '_stylesheets', array());
@@ -127,6 +133,11 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'node_type_form' && $form['#node_type']->type) {
     vertical_tabs_node_type_form($form, $form['#node_type']->type);
   }
+
+  if ($form_id == 'node_type_form') {
+    vertical_tabs_add_vertical_tabs($form);
+    unset($form['vertical_tabs']['#vertical_tabs_settings']['identity']);
+  }
 }
 
 /**
@@ -139,9 +150,7 @@ function vertical_tabs_node_form_pre_render($form) {
   // for the node form, and their JavaScript summary creators.
   $fieldsets = vertical_tabs_fieldsets($node_type);
 
-  if (vertical_tabs_add_vertical_tabs($form, $fieldsets)) {
-    drupal_add_js(drupal_get_path('module', 'vertical_tabs') .'/vertical_tabs.node_form.js');
-  }
+  vertical_tabs_add_vertical_tabs($form, $fieldsets);
 
   return $form;
 }
@@ -172,14 +181,14 @@ function vertical_tabs_node_type_form(&$form, $node_type) {
     }
   }
 
-  $form['vertical_tabs'] = array(
+  $form['vertical_tabs_settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('Vertical tabs'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#description' => t('The selected fieldsets will be rendered as vertical tabs for this content type. The tabs are rendered in the same version as the original form\'s fieldsets.'),
   );
-  $form['vertical_tabs']['vertical_tabs_fieldsets'] = array(
+  $form['vertical_tabs_settings']['vertical_tabs_fieldsets'] = array(
     '#type' => 'checkboxes',
     '#options' => $fieldsets,
     '#default_value' => vertical_tabs_fieldsets($node_type),
