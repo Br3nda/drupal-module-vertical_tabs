@@ -1,4 +1,4 @@
-// $Id: vertical_tabs.node_form.js,v 1.1.2.8 2009/11/06 23:40:51 davereid Exp $
+// $Id: vertical_tabs.node_form.js,v 1.1.2.9 2009/11/18 20:06:45 davereid Exp $
 
 Drupal.verticalTabs = Drupal.verticalTabs || {};
 
@@ -16,10 +16,10 @@ Drupal.verticalTabs.book = function() {
 Drupal.verticalTabs.revision_information = function() {
   if ($('#edit-revision').length) {
     if ($('#edit-revision').attr('checked')) {
-      return Drupal.t('Create new revision');
+      return Drupal.t('New revision');
     }
     else {
-      return Drupal.t('Don\'t create new revision');
+      return Drupal.t('No revision');
     }
   }
   else {
@@ -41,6 +41,9 @@ Drupal.verticalTabs.options = function() {
   var vals = [];
   if ($('#edit-status').attr('checked')) {
     vals.push(Drupal.t('Published'));
+  }
+  else {
+    vals.push(Drupal.t('Not published'));
   }
   if ($('#edit-promote').attr('checked')) {
     vals.push(Drupal.t('Promoted to front page'));
@@ -64,7 +67,7 @@ Drupal.verticalTabs.menu = function() {
 }
 
 Drupal.verticalTabs.comment_settings = function() {
-  return $('.vertical-tabs-comment_settings input[checked]').parent().text().replace(/^\s*(.*)\s*$/, '$1');
+  return $('.vertical-tabs-comment_settings input:checked').parent().text();
 }
 
 Drupal.verticalTabs.attachments = function() {
