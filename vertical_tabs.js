@@ -1,4 +1,4 @@
-// $Id: vertical_tabs.js,v 1.3.2.15 2009/11/06 23:15:25 davereid Exp $
+// $Id: vertical_tabs.js,v 1.3.2.16 2009/11/19 01:30:52 davereid Exp $
 
 Drupal.verticalTabs = Drupal.verticalTabs || {};
 
@@ -64,5 +64,16 @@ Drupal.behaviors.verticalTabsReload = function() {
     if (v.callback && Drupal.verticalTabs[v.callback]) {
       $('a.vertical-tabs-list-' + k + ' span.summary').html(Drupal.verticalTabs[v.callback].apply(this, v.args));
     }
+  });
+}
+
+Drupal.behaviors.verticalTabsSettings = function(context) {
+  $('input#edit-vertical-tabs-fieldsets-vertical-tabs-all', context).click(function () {
+    var checked = $(this).attr('checked');
+    $('fieldset.vertical-tabs-vertical_tabs_settings input:not(#edit-vertical-tabs-fieldsets-vertical-tabs-all):checkbox').attr('checked', checked).attr('disabled', checked);
+  });
+  $(document).ready(function () {
+    var checked = $('input#edit-vertical-tabs-fieldsets-vertical-tabs-all').attr('checked');
+    $('fieldset.vertical-tabs-vertical_tabs_settings input:not(#edit-vertical-tabs-fieldsets-vertical-tabs-all):checkbox').attr('checked', checked).attr('disabled', checked);
   });
 }
