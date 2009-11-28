@@ -1,22 +1,30 @@
-// $Id: vertical_tabs.node_type_form.js,v 1.1.2.1 2009/11/18 20:28:34 davereid Exp $
+// $Id: vertical_tabs.node_type_form.js,v 1.1.2.2 2009/11/28 22:39:03 davereid Exp $
 
 Drupal.verticalTabs = Drupal.verticalTabs || {};
 
 
 Drupal.verticalTabs.comment = function() {
   var vals = [];
-
   vals.push($(".vertical-tabs-comment input[name='comment']:checked").parent().text());
+  vals.push($(".vertical-tabs-comment input[name='comment_default_mode']:checked").parent().text());
+  vals.push(Drupal.t('@number comments per page', {'@number': $(".vertical-tabs-comment select[name='comment_default_per_page'] option:selected").val()}));
+  return vals.join(', ');
+}
 
-  // Threading.
-  var threading = $(".vertical-tabs-comment input[name='comment_default_mode']:checked").parent().text();
-  if (threading) {
-    vals.push(threading);
+Drupal.verticalTabs.submission = function() {
+  var vals = [];
+  vals.push(Drupal.checkPlain($('.vertical-tabs-submission #edit-title-label').val()) || Drupal.t('Requires a title'));
+  vals.push(Drupal.checkPlain($('.vertical-tabs-submission #edit-body-label').val()) || Drupal.t('No body'));
+  return vals.join(', ');
+}
+
+Drupal.verticalTabs.workflow = function() {
+  var vals = [];
+  $(".vertical-tabs-workflow input[name^='node_options']:checked").parent().each(function() {
+    vals.push(Drupal.checkPlain($(this).text()));
+  });
+  if (!$('.vertical-tabs-workflow #edit-node-options-status').is(':checked')) {
+    vals.unshift(Drupal.t('Not published'));
   }
-
-  // Comments per page.
-  var number = $(".vertical-tabs-comment select[name='comment_default_per_page'] option:selected").val();
-  vals.push(Drupal.t('@number comments per page', {'@number': number}));
-
   return vals.join(', ');
 }
