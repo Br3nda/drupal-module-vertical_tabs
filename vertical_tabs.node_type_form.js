@@ -1,7 +1,6 @@
-// $Id: vertical_tabs.node_type_form.js,v 1.1.2.2 2009/11/28 22:39:03 davereid Exp $
+// $Id: vertical_tabs.node_type_form.js,v 1.1.2.3 2009/12/04 05:17:42 davereid Exp $
 
 Drupal.verticalTabs = Drupal.verticalTabs || {};
-
 
 Drupal.verticalTabs.comment = function() {
   var vals = [];
