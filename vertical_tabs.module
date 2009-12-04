@@ -348,7 +348,7 @@ function theme_vertical_tabs_js_css($js, $css, $settings, $form_id) {
 function vertical_tabs_form_controller_info() {
   $alterations['vertical_tabs_form'] = array(
     'title' => t('Vertical tabs'),
-    'description' => t('Enables fieldsets to be collapsed into a vertical tab dispaly.'),
+    'description' => t('Enables fieldsets to be collapsed into a vertical tab display.'),
     'form callback' => 'vertical_tabs_form_controller_configure',
   );
   return $alterations;
