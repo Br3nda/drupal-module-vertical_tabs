@@ -372,10 +372,11 @@ function vertical_tabs_form_controller_configure(&$complete_form, $form_id, $con
     );
 
     // Merge default values and correct non-key-matching values.
-    if (is_array($config)) {
+    $defaults = is_array($config) ? $config : array();
+    if (is_array($defaults)) {
       foreach (array_keys($elements) as $element) {
         if (!isset($config[$element]) || $config[$element]) {
-          $config[$element] = $element;
+          $defaults[$element] = $element;
         }
       }
     }
@@ -384,7 +385,7 @@ function vertical_tabs_form_controller_configure(&$complete_form, $form_id, $con
       '#title' => t('Include the following elements in the vertical tabs'),
       '#description' => t('New fieldsets will be included by default.'),
       '#options' => $elements,
-      '#default_value' => $config,
+      '#default_value' => $defaults,
     );
 
     if (module_exists('ctools')) {
