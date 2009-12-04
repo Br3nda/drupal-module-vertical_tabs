@@ -1,9 +1,10 @@
-// $Id: vertical_tabs.js,v 1.3.2.17 2009/11/28 22:10:17 davereid Exp $
+// $Id: vertical_tabs.js,v 1.3.2.18 2009/12/04 05:18:57 davereid Exp $
 
 Drupal.verticalTabs = Drupal.verticalTabs || {};
+Drupal.settings.verticalTabs = Drupal.settings.verticalTabs || {};
 
 Drupal.behaviors.verticalTabs = function() {
-  if (!$('.vertical-tabs-list').size()) {
+  if (!$('.vertical-tabs-list').size() && Drupal.settings.verticalTabs) {
     var ul = $('<ul class="vertical-tabs-list"></ul>');
     var panes = $('<div class="vertical-tabs-panes"></div>');
     $.each(Drupal.settings.verticalTabs, function(k, v) {
