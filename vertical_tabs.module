@@ -32,6 +32,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
   elseif ($config) {
     $form['#vertical_tabs'] = is_array($config) ? $config : array();
     $form['#pre_render'][] = 'vertical_tabs_form_pre_render';
+    $form['#cache'] = FALSE;
 
     // Add supported core forms summary JavaScript.
     if (substr($form_id, -10) == '_node_form') {
