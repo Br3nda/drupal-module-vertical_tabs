@@ -149,7 +149,7 @@ function vertical_tabs_get_default_config() {
 }
 
 function vertical_tabs_save_config($form_id, $fieldsets) {
-  $config = variable_get('vertical_tabs_form', array());
+  $config = variable_get('vertical_tabs_forms', array());
   $config[$form_id] = $fieldsets;
   variable_set('vertical_tabs_forms', $config);
 }
