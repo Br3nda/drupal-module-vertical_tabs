@@ -117,7 +117,7 @@ function vertical_tabs_generate_stylesheet($theme, $info, $palette) {
  */
 function vertical_tabs_node_type($op, $info) {
   if ($op == 'update' && !empty($info->old_type) && $info->old_type != $info->type) {
-    vertical_tabs_rename_config_($info->type . '_node_form', $info->old_type . '_node_form');
+    vertical_tabs_rename_config($info->type . '_node_form', $info->old_type . '_node_form');
   }
   elseif ($op == 'delete') {
     vertical_tabs_delete_config($info->type . '_node_form');
