@@ -39,7 +39,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     $fieldsets = array();
     if (substr($form_id, -10) == '_node_form') {
       $js = drupal_get_path('module', 'vertical_tabs') . '/vertical_tabs.node_form.js';
-      $fieldsets += array('revision_information' => $js, 'author' => $js, 'options' => $js);
+      $fieldsets += array('revision_information' => $js, 'author' => $js, 'options' => $js, 'book' => $js, 'menu' => $js, 'comment_settings' => $js, 'attachments' => $js, 'path' => $js, 'taxonomy' => $js);
     }
     elseif ($form_id == 'node_type_form') {
       $js = drupal_get_path('module', 'vertical_tabs') . '/vertical_tabs.node_type_form.js';
