@@ -146,6 +146,8 @@ function vertical_tabs_get_default_config() {
     $forms[$node_type . '_node_form'] = TRUE;
   }
   $forms['node_type_form'] = array('identity' => 0);
+  $forms['block_admin_configure'] = array('block_settings' => 0);
+  $forms['block_add_block_form'] = array('block_settings' => 0);
   return $forms;
 }
 
@@ -238,11 +240,10 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = array()) {
 
     if ($setting = vertical_tabs_process_element($element, $key)) {
       $settings[$key] = $setting;
+      // Track the maximum weight for the vertical tabs element.
+      $weight = max($weight, $settings[$key]['weight']);
       $settings[$key]['weight'] += 0.001 * $delta++;
     }
-
-    // Track the maximum weight for the vertical tabs element and increment delta.
-    $weight = max($weight, $settings[$key]['weight']);
   }
 
   // The JavaScript and CSS specific for this form.
@@ -280,6 +281,9 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = array()) {
       '#attributes' => array('class' => 'vertical-tabs clear-block'),
       '#weight' => $weight,
     );
+
+    // Resort the form since we've added a new element after it's been sorted.
+    uasort($form, 'element_sort');
 
     return TRUE;
   }
