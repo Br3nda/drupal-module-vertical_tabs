@@ -372,16 +372,16 @@ function theme_vertical_tabs_js_css($js, $css, $settings, $form_id) {
 /**
  * Implement hook_form_controller_info().
  */
-function vertical_tabs_form_controller_info() {
+function vertical_tabs_form_info() {
   $alterations['vertical_tabs_form'] = array(
     'title' => t('Vertical tabs'),
     'description' => t('Enables fieldsets to be collapsed into a vertical tab display.'),
-    'form callback' => 'vertical_tabs_form_controller_configure',
+    'form callback' => 'vertical_tabs_form_configure',
   );
   return $alterations;
 }
 
-function vertical_tabs_form_controller_configure(&$complete_form, $form_id, $context) {
+function vertical_tabs_form_configure(&$complete_form, $form_id, $context) {
   if ($elements = vertical_tabs_get_form_elements($context['form'], '#title')) {
     // Check if this form is currently vertical tabified.
     $is_form_tabified = isset($context['form']['vertical_tabs']) || (isset($context['form']['#pre_render']) && in_array('vertical_tabs_form_pre_render', $context['form']['#pre_render']));
@@ -424,13 +424,13 @@ function vertical_tabs_form_controller_configure(&$complete_form, $form_id, $con
       );
     }
 
-    $complete_form['#submit'][] = 'vertical_tabs_form_controller_configure_submit';
+    $complete_form['#submit'][] = 'vertical_tabs_form_configure_submit';
     return $form;
   }
 }
 
-function vertical_tabs_form_controller_configure_submit($form, &$form_state) {
-  $form_id = $form_state['form_controller']['form_id'];
+function vertical_tabs_form_configure_submit($form, &$form_state) {
+  $form_id = $form_state['form']['form_id'];
   if ($form_state['values']['vertical_tabs_form']['status']) {
     vertical_tabs_save_config($form_id, $form_state['values']['vertical_tabs_form']['fieldsets']);
   }
