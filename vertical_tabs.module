@@ -29,38 +29,43 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
   elseif ($config) {
     $form['#vertical_tabs'] = is_array($config) ? $config : array();
     $form['#pre_render'][] = 'vertical_tabs_form_pre_render';
-    //@todo Validation errors do not get JavaScript re-included.
-    //$form['#cache'] = FALSE;
 
     // Add supported core forms summary JavaScript.
-    $fieldsets = array();
-    if (substr($form_id, -10) == '_node_form') {
-      $fieldsets += array(
-        'revision_information' => 'node',
-        'author' => 'node',
-        'options' => 'node',
-        'book' => 'book',
-        'menu' => 'menu',
-        'comment_settings' => 'comment',
-        'attachments' => 'upload',
-        'path' => 'path',
-        'taxonomy' => 'taxonomy',
-      );
-    }
-    elseif ($form_id == 'node_type_form') {
-      $fieldsets += array(
-        'submission' => 'content_types',
-        'workflow' => 'content_types',
-        'comment' => 'comment',
-      );
-    }
-    if (!empty($fieldsets)) {
-      vertical_tabs_add_core_attached_js($form, $fieldsets);
-    }
+    vertical_tabs_add_core_attached_js($form, $form_id);
   }
 }
 
-function vertical_tabs_add_core_attached_js(&$form, $fieldsets = array()) {
+/**
+ * Add core module fieldsets summary JavaScript.
+ *
+ * @param $form
+ *   The form array, passed by reference.
+ * @param $fomr_id
+ *   The ID of the form.
+ */
+function vertical_tabs_add_core_attached_js(&$form, $form_id) {
+  $fieldsets = array();
+  if (substr($form_id, -10) == '_node_form') {
+    $fieldsets += array(
+      'revision_information' => 'node',
+      'author' => 'node',
+      'options' => 'node',
+      'book' => 'book',
+      'menu' => 'menu',
+      'comment_settings' => 'comment',
+      'attachments' => 'upload',
+      'path' => 'path',
+      'taxonomy' => 'taxonomy',
+    );
+  }
+  elseif ($form_id == 'node_type_form') {
+    $fieldsets += array(
+      'submission' => 'content_types',
+      'workflow' => 'content_types',
+      'comment' => 'comment',
+    );
+  }
+
   foreach ($fieldsets as $fieldset => $module) {
     $js = drupal_get_path('module', 'vertical_tabs') . '/core/' . $module . '.js';
     if (isset($form[$fieldset]) && is_file($js)) {
@@ -264,7 +269,16 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = array()) {
       continue;
     }
 
-    $settings[$key] = vertical_tabs_process_element($element, $key);
+    // Process the element.
+    vertical_tabs_process_element($element, $key);
+    vertical_tabs_process_attached($element);
+
+    $settings[$key] = array(
+      'name' => $element['#title'],
+      'weight' => isset($element['#weight']) ? $element['#weight'] : 0,
+      'callback' => isset($element['#summary_callback']) ? $element['#summary_callback'] : $key,
+      'args' => isset($element['#summary_arguments']) ? $element['#summary_arguments'] : array(),
+    );
 
     // Track the maximum weight for the vertical tabs element.
     $weight = max($weight, $settings[$key]['weight']);
@@ -297,16 +311,18 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = array()) {
     uasort($settings, '_user_sort');
 
     $form['vertical_tabs'] = array(
-      '#vertical_tabs_settings' => $settings,
-      '#vertical_tabs_js' => $js,
-      '#vertical_tabs_css' => $css,
       '#form_id' => isset($form['form_id']['#value']) ? $form['form_id']['#value'] : '',
       '#type' => 'markup',
       '#value' => '',
       '#theme' => 'vertical_tabs',
       '#attributes' => array('class' => 'vertical-tabs clear-block'),
       '#weight' => $weight,
+      '#attached' => array(
+        'js' => $js,
+        'css' => $css,
+      ),
     );
+    $form['vertical_tabs']['#attached']['js'][] = array('data' => array('verticalTabs' => $settings), 'type' => 'setting');
 
     // Resort the form since we've added a new element after it's been sorted.
     uasort($form, 'element_sort');
@@ -320,40 +336,45 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = array()) {
  */
 function vertical_tabs_process_element(&$element, $key) {
   // Merge defaults.
-  $element += array('#attributes' => array(), '#attached' => array());
+  $element += array('#attributes' => array());
   $element['#attributes'] += array('class' => '');
-  $element['#attached'] += array('js' => array());
 
   // Add a class to identify the fieldset.
   $element['#attributes']['class'] .= ' vertical-tabs-fieldset vertical-tabs-' . $key;
 
+  return $element;
+}
+
+function vertical_tabs_process_attached($element) {
+  $element += array('#attached' => array());
+  $element['#attached'] += array('js' => array(), 'css' => array());
+
   // Add any attached vertical tabs JavaScript.
   // Copied from form_process_attached() in Drupal 7.
-  foreach ($element['#attached']['js'] as $data => $options) {
-    // If the value is not an array, it's a filename and passed as first
-    // (and only) argument.
-    if (!is_array($options)) {
-      $data = $options;
-      $options = array();
-    }
-    // In some cases, the first parameter ($data) is an array. Arrays can't be
-    // passed as keys in PHP, so we have to get $data from the value array.
-    if (is_numeric($data)) {
-      $data = $options['data'];
-      unset($options['data']);
-    }
-    $options += array('type' => 'module');
-    drupal_add_js($data, $options['type']);
-    unset($element['#attached']['js']);
-  }
+  foreach (array('js', 'css') as $type) {
+    foreach ($element['#attached'][$type] as $data => $options) {
+      // If the value is not an array, it's a filename and passed as first
+      // (and only) argument.
+      if (!is_array($options)) {
+        $data = $options;
+        $options = array();
+      }
+      // In some cases, the first parameter ($data) is an array. Arrays can't be
+      // passed as keys in PHP, so we have to get $data from the value array.
+      if (is_numeric($data)) {
+        $data = $options['data'];
+        unset($options['data']);
+      }
 
-  // Return the JavaScript settings for this vertical tab.
-  return array(
-    'name' => $element['#title'],
-    'weight' => isset($element['#weight']) ? $element['#weight'] : 0,
-    'callback' => isset($element['#summary_callback']) ? $element['#summary_callback'] : $key,
-    'args' => isset($element['#summary_arguments']) ? $element['#summary_arguments'] : array(),
-  );
+      $options += array('type' => 'module');
+      if ($type == 'js') {
+        drupal_add_js($data, $options['type']);
+      }
+      else {
+        drupal_add_css($data, $options['type']);
+      }
+    }
+  }
 }
 
 /**
@@ -380,15 +401,7 @@ function theme_vertical_tabs($element) {
     drupal_add_css(drupal_get_path('module', 'vertical_tabs') . '/vertical_tabs.css');
     $added = TRUE;
   }
-
-  foreach($element['#vertical_tabs_js'] as $js) {
-    drupal_add_js($js);
-  }
-  foreach($element['#vertical_tabs_css'] as $css) {
-    drupal_add_css($css);
-  }
-
-  drupal_add_js(array('verticalTabs' => $element['#vertical_tabs_settings']), 'setting');
+  vertical_tabs_process_attached($element);
 
   return '<div class="'. $element['#attributes']['class'] .'">&nbsp;</div>';
 }
