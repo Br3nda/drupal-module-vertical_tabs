@@ -20,7 +20,7 @@ function vertical_tabs_theme() {
  * Implement hook_form_alter().
  */
 function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
-  // Add the support for core forms.
+  // Add the support and default groupings for core forms.
   vertical_tabs_add_core_support($form, $form_id);
 
   $config = vertical_tabs_get_config($form_id);
@@ -40,7 +40,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
 }
 
 /**
- * Add core module fieldsets summary JavaScript.
+ * Add core module fieldset support.
  *
  * @param $form
  *   The form array, passed by reference.
@@ -48,39 +48,36 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
  *   The ID of the form.
  */
 function vertical_tabs_add_core_support(&$form, $form_id) {
-  $fieldsets = array();
-
+  $groups = $js = array();
   if (substr($form_id, -10) == '_node_form') {
-    $fieldsets += array(
-      'revision_information' => 'node',
-      'author' => 'node',
-      'options' => 'node',
-      'book' => 'book',
-      'menu' => 'menu',
-      'comment_settings' => 'comment',
-      'attachments' => 'upload',
-      'path' => 'path',
-      'taxonomy' => 'taxonomy',
-    );
+    $js['revision_information'] = $js['author'] = $js['options'] = 'node';
+    $js['book'] = 'book';
+    $js['menu'] = 'menu';
+    $js['comment_settings'] = 'comment';
+    $js['attachments'] = 'upload';
+    $js['path'] = 'path';
+    $js['taxonomy'] = 'taxonomy';
   }
   elseif ($form_id == 'node_type_form') {
-    $fieldsets += array(
-      'submission' => 'content_types',
-      'workflow' => 'content_types',
-      'comment' => 'comment',
-    );
-    $form['identity'] += array('#group' => FALSE);
+    $groups['identity'] = FALSE;
+    $js['submission'] = $js['workflow'] = 'content_types';
+    $js['comment'] = 'comment';
   }
   elseif ($form_id == 'block_admin_configure' || strpos($form_id, 'block_add_block_form') !== FALSE) {
-    $form['block_settings'] += array('#group' => FALSE);
+    $groups['block_settings'] = FALSE;
+    $js['user_vis_settings'] = $js['role_vis_settings'] = $js['page_vis_settings'] = 'block';
   }
 
-  foreach ($fieldsets as $fieldset => $module) {
-    $js = drupal_get_path('module', 'vertical_tabs') . '/core/' . $module . '.js';
-    if (isset($form[$fieldset]) && is_file($js)) {
-      $form[$fieldset] += array('#attached' => array());
-      $form[$fieldset]['#attached'] += array('js' => array());
-      $form[$fieldset]['#attached']['js'] += array('vertical-tabs' => $js);
+  foreach ($groups as $key => $group) {
+    $form[$key] += array('#group' => $group);
+  }
+
+  foreach ($js as $key => $module) {
+    $file = drupal_get_path('module', 'vertical_tabs') . '/core/' . $module . '.js';
+    if (isset($form[$key]) && is_file($file)) {
+      $form[$key] += array('#attached' => array());
+      $form[$key]['#attached'] += array('js' => array());
+      $form[$key]['#attached']['js'] += array('vertical-tabs' => $file);
     }
   }
 }
@@ -323,7 +320,6 @@ function vertical_tabs_add_vertical_tabs(&$form, $config = array()) {
     uasort($settings, '_user_sort');
 
     $form['vertical_tabs'] = array(
-      '#form_id' => isset($form['form_id']['#value']) ? $form['form_id']['#value'] : '',
       '#type' => 'markup',
       '#value' => '',
       '#theme' => 'vertical_tabs',
