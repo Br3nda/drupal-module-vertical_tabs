@@ -48,36 +48,42 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
  *   The ID of the form.
  */
 function vertical_tabs_add_core_support(&$form, $form_id) {
-  $groups = $js = array();
+  $fieldsets = array();
+  $group = '';
+
   if (substr($form_id, -10) == '_node_form') {
-    $js['revision_information'] = $js['author'] = $js['options'] = 'node';
-    $js['book'] = 'book';
-    $js['menu'] = 'menu';
-    $js['comment_settings'] = 'comment';
-    $js['attachments'] = 'upload';
-    $js['path'] = 'path';
-    $js['taxonomy'] = 'taxonomy';
+    $fieldsets['revision_information'] = 'node';
+    $fieldsets['author'] = 'node';
+    $fieldsets['options'] = 'node';
+    $fieldsets['book'] = 'book';
+    $fieldsets['menu'] = 'menu';
+    $fieldsets['comment_settings'] = 'comment';
+    $fieldsets['attachments'] = 'upload';
+    $fieldsets['path'] = 'path';
+    $fieldsets['taxonomy'] = 'taxonomy';
+    $group = 'additional_settings';
   }
   elseif ($form_id == 'node_type_form') {
-    $groups['identity'] = FALSE;
-    $js['submission'] = $js['workflow'] = 'content_types';
-    $js['comment'] = 'comment';
+    $fieldsets['submission'] = 'content_types';
+    $fieldsets['workflow'] = 'content_types';
+    $fieldsets['comment'] = 'comment';
+    $group = 'additional_settings';
   }
   elseif ($form_id == 'block_admin_configure' || strpos($form_id, 'block_add_block_form') !== FALSE) {
-    $groups['block_settings'] = FALSE;
-    $js['user_vis_settings'] = $js['role_vis_settings'] = $js['page_vis_settings'] = 'block';
+    $fieldsets['user_vis_settings'] = 'block';
+    $fieldsets['role_vis_settings'] = 'block';
+    $fieldsets['page_vis_settings'] = 'block';
+    $group = 'visibility_settings';
   }
 
-  foreach ($groups as $key => $group) {
-    $form[$key] += array('#group' => $group);
-  }
-
-  foreach ($js as $key => $module) {
-    $file = drupal_get_path('module', 'vertical_tabs') . '/core/' . $module . '.js';
-    if (isset($form[$key]) && is_file($file)) {
-      $form[$key] += array('#attached' => array());
-      $form[$key]['#attached'] += array('js' => array());
-      $form[$key]['#attached']['js'] += array('vertical-tabs' => $file);
+  foreach ($fieldsets as $key => $module) {
+    if (isset($form[$key])) {
+      $form[$key] += array('#group' => $group, '#attached' => array());
+      $file = drupal_get_path('module', 'vertical_tabs') . '/core/' . $module . '.js';
+      if (is_file($file)) {
+        $form[$key]['#attached'] += array('js' => array());
+        $form[$key]['#attached']['js'] += array('vertical-tabs' => $file);
+      }
     }
   }
 }
@@ -230,7 +236,6 @@ function vertical_tabs_get_form_elements(&$form) {
     }
 
     $elements[$key] = &$form[$key];
-    $elements[$key] += array('#group' => TRUE);
   }
   return $elements;
 }
@@ -446,7 +451,7 @@ function vertical_tabs_form_configure(&$complete_form, $form_id, $context) {
     $options = array();
     foreach ($elements as $key => $element) {
       $options[$key] = $element['#title'];
-      if (!isset($defaults[$key]) && $element['#group']) {
+      if (!isset($defaults[$key]) && !empty($element['#group'])) {
         $defaults[$key] = $key;
       }
     }
