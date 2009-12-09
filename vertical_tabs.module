@@ -27,7 +27,11 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     vertical_tabs_remove_vertical_tabs($form);
   }
   elseif ($config) {
-    $form['#vertical_tabs'] = is_array($config) ? $config : array();
+    // Merge in the vertical tabs settings in case they already existed.
+    $form += array('#vertical_tabs' => array());
+    if (is_array($config)) {
+      $form['#vertical_tabs'] += $config;
+    }
     $form['#pre_render'][] = 'vertical_tabs_form_pre_render';
 
     // Add supported core forms summary JavaScript.
