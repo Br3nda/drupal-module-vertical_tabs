@@ -1,14 +1,6 @@
-// $Id: vertical_tabs.node_type_form.js,v 1.1.2.3 2009/12/04 05:17:42 davereid Exp $
+// $Id: content_types.js,v 1.1.2.1 2009/12/09 01:08:39 davereid Exp $
 
 Drupal.verticalTabs = Drupal.verticalTabs || {};
-
-Drupal.verticalTabs.comment = function() {
-  var vals = [];
-  vals.push($(".vertical-tabs-comment input[name='comment']:checked").parent().text());
-  vals.push($(".vertical-tabs-comment input[name='comment_default_mode']:checked").parent().text());
-  vals.push(Drupal.t('@number comments per page', {'@number': $(".vertical-tabs-comment select[name='comment_default_per_page'] option:selected").val()}));
-  return vals.join(', ');
-}
 
 Drupal.verticalTabs.submission = function() {
   var vals = [];

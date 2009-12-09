@@ -38,25 +38,38 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
     // Add supported core forms summary JavaScript.
     $fieldsets = array();
     if (substr($form_id, -10) == '_node_form') {
-      $js = drupal_get_path('module', 'vertical_tabs') . '/vertical_tabs.node_form.js';
-      $fieldsets += array('revision_information' => $js, 'author' => $js, 'options' => $js, 'book' => $js, 'menu' => $js, 'comment_settings' => $js, 'attachments' => $js, 'path' => $js, 'taxonomy' => $js);
+      $fieldsets += array(
+        'revision_information' => 'node',
+        'author' => 'node',
+        'options' => 'node',
+        'book' => 'book',
+        'menu' => 'menu',
+        'comment_settings' => 'comment',
+        'attachments' => 'upload',
+        'path' => 'path',
+        'taxonomy' => 'taxonomy',
+      );
     }
     elseif ($form_id == 'node_type_form') {
-      $js = drupal_get_path('module', 'vertical_tabs') . '/vertical_tabs.node_type_form.js';
-      $fieldsets += array('submission' => $js, 'workflow' => $js, 'comment' => $js);
+      $fieldsets += array(
+        'submission' => 'content_types',
+        'workflow' => 'content_types',
+        'comment' => 'comment',
+      );
     }
     if (!empty($fieldsets)) {
-      vertical_tabs_add_attached_js($form, $fieldsets);
+      vertical_tabs_add_core_attached_js($form, $fieldsets);
     }
   }
 }
 
-function vertical_tabs_add_attached_js(&$form, $fieldsets_js = array()) {
-  foreach ($fieldsets_js as $fieldset => $js) {
-    if (isset($form[$fieldset])) {
+function vertical_tabs_add_core_attached_js(&$form, $fieldsets = array()) {
+  foreach ($fieldsets as $fieldset => $module) {
+    $js = drupal_get_path('module', 'vertical_tabs') . '/core/' . $module . '.js';
+    if (isset($form[$fieldset]) && is_file($js)) {
       $form[$fieldset] += array('#attached' => array());
       $form[$fieldset]['#attached'] += array('js' => array());
-      $form[$fieldset]['#attached']['js']['vertical_tabs'] = $js;
+      $form[$fieldset]['#attached']['js'] += array('vertical-tabs' => $js);
     }
   }
 }
