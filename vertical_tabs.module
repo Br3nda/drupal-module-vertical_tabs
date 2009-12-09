@@ -20,6 +20,9 @@ function vertical_tabs_theme() {
  * Implement hook_form_alter().
  */
 function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
+  // Add the support for core forms.
+  vertical_tabs_add_core_support($form, $form_id);
+
   $config = vertical_tabs_get_config($form_id);
 
   // Skip programmed or excluded forms.
@@ -33,9 +36,6 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
       $form['#vertical_tabs'] += $config;
     }
     $form['#pre_render'][] = 'vertical_tabs_form_pre_render';
-
-    // Add supported core forms summary JavaScript.
-    vertical_tabs_add_core_attached_js($form, $form_id);
   }
 }
 
@@ -47,8 +47,9 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
  * @param $fomr_id
  *   The ID of the form.
  */
-function vertical_tabs_add_core_attached_js(&$form, $form_id) {
+function vertical_tabs_add_core_support(&$form, $form_id) {
   $fieldsets = array();
+
   if (substr($form_id, -10) == '_node_form') {
     $fieldsets += array(
       'revision_information' => 'node',
@@ -68,6 +69,10 @@ function vertical_tabs_add_core_attached_js(&$form, $form_id) {
       'workflow' => 'content_types',
       'comment' => 'comment',
     );
+    $form['identity'] += array('#group' => FALSE);
+  }
+  elseif ($form_id == 'block_admin_configure' || strpos($form_id, 'block_add_block_form') !== FALSE) {
+    $form['block_settings'] += array('#group' => FALSE);
   }
 
   foreach ($fieldsets as $fieldset => $module) {
@@ -161,7 +166,8 @@ function vertical_tabs_node_type($op, $info) {
 }
 
 function vertical_tabs_get_config($form_id = NULL) {
-  $config = variable_get('vertical_tabs_forms', array());
+  $config = array();
+  $config += variable_get('vertical_tabs_forms', array());
   $config += vertical_tabs_get_default_config();
   if (isset($form_id)) {
     return isset($config[$form_id]) ? $config[$form_id] : NULL;
@@ -180,9 +186,9 @@ function vertical_tabs_get_default_config() {
   foreach ($node_types as $node_type) {
     $forms[$node_type . '_node_form'] = TRUE;
   }
-  $forms['node_type_form'] = array('identity' => 0);
-  $forms['block_admin_configure'] = array('block_settings' => 0);
-  $forms['block_add_block_form'] = array('block_settings' => 0);
+  $forms['node_type_form'] = TRUE;
+  $forms['block_admin_configure'] = TRUE;
+  $forms['block_add_block_form'] = TRUE;
   return $forms;
 }
 
@@ -210,7 +216,7 @@ function vertical_tabs_delete_config($form_id) {
 /**
  * Get all the fieldset elements from a form.
  */
-function vertical_tabs_get_form_elements(&$form, $element_key = NULL) {
+function vertical_tabs_get_form_elements(&$form) {
   $elements = array();
   foreach (element_children($form) as $key) {
     if (!isset($form[$key]['#type'])) {
@@ -226,12 +232,8 @@ function vertical_tabs_get_form_elements(&$form, $element_key = NULL) {
       continue;
     }
 
-    if (isset($element_key) && isset($form[$key][$element_key])) {
-      $elements[$key] = $form[$key][$element_key];
-    }
-    elseif (!isset($element_key)) {
-      $elements[$key] = &$form[$key];
-    }
+    $elements[$key] = &$form[$key];
+    $elements[$key] += array('#group' => TRUE);
   }
   return $elements;
 }
@@ -252,13 +254,13 @@ function vertical_tabs_form_pre_render($form) {
  *
  * @param $form
  *   A form array to be altered.
- * @param $fieldsets
+ * @param $config
  *   An array of fieldsets to use in the vertical tabs. If no array is provided,
  *   all the fieldsets in the $form array will be used.
  * @return
  *   TRUE if the vertical tabs were added to the form, otherwise FALSE.
  */
-function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = array()) {
+function vertical_tabs_add_vertical_tabs(&$form, $config = array()) {
   global $theme;
 
   $settings = array();
@@ -269,7 +271,13 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = array()) {
   foreach (array_keys($elements) as $key) {
     $element = &$elements[$key];
 
-    if (is_array($fieldsets) && isset($fieldsets[$key]) && !$fieldsets[$key]) {
+    // If there is a specific config set, override the default group setting.
+    if (isset($config[$key])) {
+      $element['#group'] = $config[$key];
+    }
+
+    // Skip any non-grouped elements.
+    if (empty($element['#group'])) {
       continue;
     }
 
@@ -423,35 +431,35 @@ function vertical_tabs_form_info() {
 }
 
 function vertical_tabs_form_configure(&$complete_form, $form_id, $context) {
-  if ($elements = vertical_tabs_get_form_elements($context['form'], '#title')) {
+  if ($elements = vertical_tabs_get_form_elements($context['form'])) {
+    // Fetch the configuration.
+    $config = vertical_tabs_get_config($form_id);
+
     // Check if this form is currently vertical tabified.
     $is_form_tabified = isset($context['form']['vertical_tabs']) || (isset($context['form']['#pre_render']) && in_array('vertical_tabs_form_pre_render', $context['form']['#pre_render']));
-
-    $config = vertical_tabs_get_config($form_id);
-    if (!isset($config)) {
-      $config = $is_form_tabified ? array() : FALSE;
-    }
 
     $form['status'] = array(
       '#type' => 'checkbox',
       '#title' => t('Vertical tabify this form.'),
-      '#default_value' => $config !== FALSE,
+      '#default_value' => isset($config) ? $config !== FALSE : $is_form_tabified,
     );
 
     // Merge default values and correct non-key-matching values.
+    // @todo Keep settings for non-accessible fieldsets set by more priviledged users?
     $defaults = is_array($config) ? $config : array();
-    if (is_array($defaults)) {
-      foreach (array_keys($elements) as $element) {
-        if (!isset($config[$element]) || $config[$element]) {
-          $defaults[$element] = $element;
-        }
+    $options = array();
+    foreach ($elements as $key => $element) {
+      $options[$key] = $element['#title'];
+      if (!isset($defaults[$key]) && $element['#group']) {
+        $defaults[$key] = $key;
       }
     }
+
     $form['fieldsets'] = array(
       '#type' => 'checkboxes',
       '#title' => t('Include the following elements in the vertical tabs'),
       '#description' => t('New fieldsets will be included by default.'),
-      '#options' => $elements,
+      '#options' => $options,
       '#default_value' => $defaults,
     );
 
