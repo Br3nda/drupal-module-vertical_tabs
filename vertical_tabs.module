@@ -310,16 +310,31 @@ function vertical_tabs_add_vertical_tabs(&$form, $fieldsets = array()) {
  */
 function vertical_tabs_process_element(&$element, $key) {
   // Merge defaults.
-  $element += array('#attributes' => array());
+  $element += array('#attributes' => array(), '#attached' => array());
   $element['#attributes'] += array('class' => '');
-  //$element['#attached'] += array('js' => array());
+  $element['#attached'] += array('js' => array());
 
   // Add a class to identify the fieldset.
   $element['#attributes']['class'] .= ' vertical-tabs-fieldset vertical-tabs-' . $key;
 
   // Add any attached vertical tabs JavaScript.
-  if (isset($element['#attached']['js']['vertical_tabs'])) {
-    drupal_add_js($element['#attached']['js']['vertical_tabs']);
+  // Copied from form_process_attached() in Drupal 7.
+  foreach ($element['#attached']['js'] as $data => $options) {
+    // If the value is not an array, it's a filename and passed as first
+    // (and only) argument.
+    if (!is_array($options)) {
+      $data = $options;
+      $options = array();
+    }
+    // In some cases, the first parameter ($data) is an array. Arrays can't be
+    // passed as keys in PHP, so we have to get $data from the value array.
+    if (is_numeric($data)) {
+      $data = $options['data'];
+      unset($options['data']);
+    }
+    $options += array('type' => 'module');
+    drupal_add_js($data, $options['type']);
+    unset($element['#attached']['js']);
   }
 
   // Return the JavaScript settings for this vertical tab.
