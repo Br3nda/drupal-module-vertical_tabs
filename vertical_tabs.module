@@ -26,7 +26,7 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
   $config = vertical_tabs_get_config($form_id);
 
   // Skip programmed or excluded forms.
-  if ($form['#programmed'] || $config === FALSE) {
+  if (!empty($form['#programmed']) || $config === FALSE) {
     vertical_tabs_remove_vertical_tabs($form);
   }
   elseif ($config) {
@@ -169,9 +169,14 @@ function vertical_tabs_node_type($op, $info) {
 }
 
 function vertical_tabs_get_config($form_id = NULL) {
-  $config = array();
-  $config += variable_get('vertical_tabs_forms', array());
-  $config += vertical_tabs_get_default_config();
+  static $config;
+
+  if (!isset($config)) {
+    $config = array();
+    $config += variable_get('vertical_tabs_forms', array());
+    $config += vertical_tabs_get_default_config();
+  }
+
   if (isset($form_id)) {
     return isset($config[$form_id]) ? $config[$form_id] : NULL;
   }
