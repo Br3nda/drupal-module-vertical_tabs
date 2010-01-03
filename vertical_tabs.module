@@ -6,7 +6,7 @@
  */
 
 /**
- * Implement hook_theme().
+ * Implements hook_theme().
  */
 function vertical_tabs_theme() {
   return array(
@@ -17,7 +17,7 @@ function vertical_tabs_theme() {
 }
 
 /**
- * Implement hook_form_alter().
+ * Implements hook_form_alter().
  */
 function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
   // Add the support and default groupings for core forms.
@@ -89,7 +89,7 @@ function vertical_tabs_add_core_support(&$form, $form_id) {
 }
 
 /**
- * Implement hook_form_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter().
  *
  * Add our color-handling submit handler to the color settings form.
  */
@@ -157,7 +157,7 @@ function vertical_tabs_generate_stylesheet($theme, $info, $palette) {
 }
 
 /**
- * Implement hook_node_type().
+ * Implements hook_node_type().
  */
 function vertical_tabs_node_type($op, $info) {
   if ($op == 'update' && !empty($info->old_type) && $info->old_type != $info->type) {
@@ -166,6 +166,26 @@ function vertical_tabs_node_type($op, $info) {
   elseif ($op == 'delete') {
     vertical_tabs_delete_config($info->type . '_node_form');
   }
+}
+
+/**
+ * Implements hook_fieldgroup_form().
+ *
+ * Apply group value to CCK fieldsets with the 'vertical tab' form display.
+ */
+function vertical_tabs_fieldgroup_form(&$form, $form_state, $form_id, $group) {
+  if (in_array($group['settings']['form']['style'], array('fieldset_vertical_tab'))) {
+    $form[$group['group_name']]['#group'] = 'additional_settings';
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adds a 'vertical tab' form option on CCK fieldset settings.
+ */
+function vertical_tabs_form_fieldgroup_group_edit_form_alter(&$form, $form_state) {
+  $form['settings']['form']['style']['#options']['fieldset_vertical_tab'] = t('vertical tab');
 }
 
 function vertical_tabs_get_config($form_id = NULL) {
@@ -425,7 +445,7 @@ function theme_vertical_tabs($element) {
 }
 
 /**
- * Implement hook_form_controller_info().
+ * Implements hook_form_controller_info().
  */
 function vertical_tabs_form_info() {
   $alterations['vertical_tabs_form'] = array(
