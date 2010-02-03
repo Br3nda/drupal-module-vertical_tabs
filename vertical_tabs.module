@@ -322,7 +322,7 @@ function vertical_tabs_add_vertical_tabs(&$form, $config = array()) {
   $elements = vertical_tabs_get_form_elements($form);
   foreach (array_keys($elements) as $key) {
     $element = &$elements[$key];
-    $element += array('#group' => variable_get('vertical_tabs_default', 0));
+    $element += array('#group' => variable_get('vertical_tabs_default', 1));
 
     // If there is a specific config set, override the default group setting.
     if (isset($config[$key]) && (bool) $config[$key] != (bool) $element['#group']) {
@@ -352,7 +352,7 @@ function vertical_tabs_add_vertical_tabs(&$form, $config = array()) {
   }
 
   // The JavaScript and CSS specific for this form.
-  if (!empty($settings)) {
+  if (count($settings) >= variable_get('vertical_tabs_minimum', 1)) {
     $js = $css = array();
 
     // Add theme-specific CSS.
