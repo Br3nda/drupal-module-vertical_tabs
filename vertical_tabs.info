@@ -1,5 +1,5 @@
 name = Vertical Tabs
-description = Provides vertical tabs for the node form.
+description = Provides vertical tabs for supported forms like the node edit page.
 core = 6.x
 package = User interface
 recommends[] = form

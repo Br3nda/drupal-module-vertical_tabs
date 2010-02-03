@@ -1,9 +1,24 @@
 <?php
 
 /**
- * @file Main file for the vertical tabs module - provides vertical tabs on the
- * node form.
+ * @file
+ * Provides vertical tabs capability for fieldsets in forms.
  */
+
+/**
+ * Implements hook_menu().
+ */
+function vertical_tabs_menu() {
+  $items['admin/settings/vertical-tabs'] = array(
+    'title' => t('Vertical Tabs'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('vertical_tabs_settings_form'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'vertical_tabs.admin.inc',
+  );
+
+  return $items;
+}
 
 /**
  * Implements hook_theme().
@@ -40,6 +55,16 @@ function vertical_tabs_form_alter(&$form, $form_state, $form_id) {
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vertical_tabs_form_node_type_form_alter(&$form, $form_state) {
+  if (empty($form['#programmed']) && $form['#node_type']->type && variable_get('vertical_tabs_node_type_settings', 0)) {
+    module_load_include('inc', 'vertical_tabs', 'vertical_tabs.admin');
+    vertical_tabs_add_node_type_options($form, $form['#node_type']->type);
+  }
+}
+
+/**
  * Add core module fieldset support.
  *
  * @param $form
@@ -51,7 +76,7 @@ function vertical_tabs_add_core_support(&$form, $form_id) {
   $fieldsets = array();
   $group = '';
 
-  if (substr($form_id, -10) == '_node_form') {
+  if (isset($form['type']) && isset($form['#node']) && $form['type']['#value'] .'_node_form' == $form_id) {
     $fieldsets['revision_information'] = 'node';
     $fieldsets['author'] = 'node';
     $fieldsets['options'] = 'node';
@@ -297,9 +322,10 @@ function vertical_tabs_add_vertical_tabs(&$form, $config = array()) {
   $elements = vertical_tabs_get_form_elements($form);
   foreach (array_keys($elements) as $key) {
     $element = &$elements[$key];
+    $element += array('#group' => variable_get('vertical_tabs_default', 0));
 
     // If there is a specific config set, override the default group setting.
-    if (isset($config[$key])) {
+    if (isset($config[$key]) && (bool) $config[$key] != (bool) $element['#group']) {
       $element['#group'] = $config[$key];
     }
 
@@ -484,7 +510,6 @@ function vertical_tabs_form_configure(&$complete_form, $form_id, $context) {
     $form['fieldsets'] = array(
       '#type' => 'checkboxes',
       '#title' => t('Include the following elements in the vertical tabs'),
-      '#description' => t('New fieldsets will be included by default.'),
       '#options' => $options,
       '#default_value' => $defaults,
     );
