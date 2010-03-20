@@ -1,4 +1,4 @@
-// $Id: taxonomy.js,v 1.1.2.1 2009/12/09 01:08:39 davereid Exp $
+// $Id: taxonomy.js,v 1.1.2.2 2010/03/20 19:11:37 davereid Exp $
 
 Drupal.verticalTabs = Drupal.verticalTabs || {};
 
@@ -15,7 +15,8 @@ Drupal.verticalTabs.taxonomy = function() {
       }
       else if ($(this).is('select')) {
         $(this).find('option[selected]').each(function() {
-          terms[vocabulary].push($(this).text());
+          var term = $(this).text().replace(/^\-+/, '');
+          terms[vocabulary].push(term);
           termCount++;
         });
       }
